@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Consultation Management - Kaivalya Astrology</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="admin.css" />
+</head>
+<body class="admin-orders">
+    <script>
+        // Check admin authentication
+        if (!localStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'admin-login.html';
+        }
+    </script>
+
+    <nav class="admin-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Kaivalya Astrology Admin</a>
+            <div class="nav-links">
+                <a href="admin-orders.html" class="nav-link orders">Orders</a>
+                <a href="admin-analytics.html" class="nav-link analytics">Analytics</a>
+                <a href="admin-products.html" class="nav-link products">Products</a>
+                <button id="adminLogoutBtn" class="admin-button">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="admin-container my-5">
+        <h2 class="admin-title">Consultation Management</h2>
+        <table class="admin-table" id="consultationsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Service Type</th>
+                    <th>Scheduled Time</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Update Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Consultations will be populated here -->
+            </tbody>
+        </table>
+    </section>
+
+    <script>
+        // Check admin authentication and admin role
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'admin-login.html';
+        } else {
+            const payload = parseJwt(token);
+            if (!payload || !payload.is_admin) {
+                window.location.href = 'admin-login.html';
+            }
+        }
+
+        const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+        adminLogoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('adminEmail');
+            localStorage.removeItem('token');
+            window.location.href = 'admin-login.html';
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const consultationsTableBody = document.querySelector('#consultationsTable tbody');
+
+            async function fetchConsultations() {
+                try {
+                    const response = await fetch('http://localhost:3001/api/consultations', {
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('token')
+                        }
+                    });
+                    if (!response.ok) throw new Error('Failed to fetch consultations');
+                    const consultations = await response.json();
+                    populateConsultations(consultations);
+                } catch (error) {
+                    consultationsTableBody.innerHTML = '<tr><td colspan="7" class="text-danger">Error loading consultations.</td></tr>';
+                }
+            }
+
+            function populateConsultations(consultations) {
+                if (consultations.length === 0) {
+                    consultationsTableBody.innerHTML = '<tr><td colspan="7">No consultations found.</td></tr>';
+                    return;
+                }
+                consultationsTableBody.innerHTML = consultations.map(consultation => `
+                    <tr data-consultation-id="${consultation.id}">
+                        <td>${consultation.id}</td>
+                        <td>${consultation.user_id}</td>
+                        <td>${consultation.service_type}</td>
+                        <td>${new Date(consultation.scheduled_time).toLocaleString()}</td>
+                        <td class="consultation-status">${consultation.status}</td>
+                        <td>${new Date(consultation.created_at).toLocaleString()}</td>
+                        <td>
+                            <select class="form-select status-select">
+                                <option value="Pending" ${consultation.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Confirmed" ${consultation.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                                <option value="Completed" ${consultation.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                <option value="Cancelled" ${consultation.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                            <button class="btn btn-primary btn-sm mt-1 update-status-btn">Update</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                document.querySelectorAll('.update-status-btn').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const row = e.target.closest('tr');
+                        const consultationId = row.getAttribute('data-consultation-id');
+                        const select = row.querySelector('.status-select');
+                        const newStatus = select.value;
+
+                        try {
+                            const response = await fetch(`http://localhost:3001/api/consultations/${consultationId}/status`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                                body: JSON.stringify({ status: newStatus })
+                            });
+                            if (!response.ok) throw new Error('Failed to update status');
+                            row.querySelector('.consultation-status').textContent = newStatus;
+                            alert('Consultation status updated successfully.');
+                        } catch (error) {
+                            alert('Error updating consultation status.');
+                        }
+                    });
+                });
+            }
+
+            fetchConsultations();
+        });
+    </script>
+</body>
+</html>

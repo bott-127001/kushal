@@ -1,0 +1,184 @@
+/* Admin Pages Common Styles */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9fafb;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Navbar common styles */
+.admin-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 15px 30px;
+    border-bottom: 2px solid #e67e22;
+    color: #333;
+}
+
+.admin-navbar .nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.admin-navbar .nav-link {
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.admin-navbar .nav-link:hover,
+.admin-navbar .nav-link.active {
+    background-color: #e67e22;
+    color: white;
+}
+
+/* Specific navbar active link colors for each admin page */
+.admin-orders .admin-navbar .nav-link.orders,
+.admin-consultations .admin-navbar .nav-link.consultations,
+.admin-analytics .admin-navbar .nav-link.analytics,
+.admin-products .admin-navbar .nav-link.products,
+.admin-login .admin-navbar .nav-link.login {
+    background-color: #cf6c17;
+    color: white;
+}
+
+.admin-content {
+    padding: 20px 30px;
+}
+
+.admin-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #004d4d;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.admin-table th,
+.admin-table td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.admin-table th {
+    background-color: #004d4d;
+    color: white;
+    font-weight: 600;
+}
+
+.admin-table tbody tr:nth-child(even) {
+    background-color: #f2f6f8;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #eaeaea;
+}
+
+.admin-button {
+    background-color: #e67e22;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.admin-button:hover {
+    background-color: #cf6c17;
+}
+
+.admin-form {
+    max-width: 600px;
+    margin-top: 20px;
+}
+
+.admin-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #004d4d;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.admin-form input:focus,
+.admin-form select:focus,
+.admin-form textarea:focus {
+    border-color: #e67e22;
+    outline: none;
+}
+
+.admin-form button {
+    background-color: #004d4d;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.admin-form button:hover {
+    background-color: #003737;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .admin-navbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .admin-navbar .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .admin-content {
+        padding: 15px;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 8px 10px;
+    }
+}

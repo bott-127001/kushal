@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Profile - Kaivalya Astrology</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="logo.png" alt="Kaivalya Logo" class="logo" />
+                Kaivalya Astrology
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto" id="navLinks">
+                    <!-- Auth links will be dynamically inserted by script.js -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="profile-section container my-5">
+        <h2>User Profile</h2>
+        <div id="profileInfo" class="mb-4">
+            <h4>Profile Information</h4>
+            <form id="profileForm">
+                <div class="mb-3">
+                    <label for="fullName" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="fullName" readonly />
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="address" />
+                </div>
+                <div class="mb-3">
+                    <label for="contactNo" class="form-label">Contact Number</label>
+                    <input type="text" class="form-control" id="contactNo" readonly />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="email" required />
+                </div>
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </form>
+            <div id="profileMessage" class="mt-3"></div>
+        </div>
+
+        <div id="ordersSection" class="mb-4">
+            <h4>Your Orders</h4>
+            <div id="ordersList">Loading orders...</div>
+        </div>
+
+        <div id="consultationsSection" class="mb-4">
+            <h4>Your Consultations</h4>
+            <div id="consultationsList">Loading consultations...</div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Update navbar auth links
+            if (typeof updateNavbarAuthLinks === 'function') {
+                updateNavbarAuthLinks();
+            }
+
+            const userEmail = localStorage.getItem('userEmail');
+            if (!userEmail) {
+                // Redirect to login if not logged in
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const usersResponse = await fetch('/api/users');
+                const users = await usersResponse.json();
+                const user = users.find(u => u.email === userEmail);
+                if (!user) {
+                    document.getElementById('profileMessage').textContent = 'User not found.';
+                    return;
+                }
+                const userId = user.id;
+
+                // Fetch full user profile
+                const profileResponse = await fetch(`/api/users/${userId}`);
+                const profile = await profileResponse.json();
+
+                // Populate profile form fields
+                document.getElementById('fullName').value = profile.full_name || '';
+                document.getElementById('address').value = profile.address || '';
+                document.getElementById('contactNo').value = profile.contact_no || '';
+                document.getElementById('email').value = profile.email || '';
+
+                // Fetch orders
+                const ordersResponse = await fetch(`/api/orders/user/${userId}`);
+                const orders = await ordersResponse.json();
+                const ordersList = document.getElementById('ordersList');
+                if (orders.length === 0) {
+                    ordersList.textContent = 'No orders found.';
+                } else {
+                    ordersList.innerHTML = orders.map(order => {
+                        return `<div class="card mb-2 p-2">
+                            <strong>Order ID:</strong> ${order.id}<br/>
+                            <strong>Status:</strong> ${order.status}<br/>
+                            <strong>Total:</strong> $${order.total.toFixed(2)}<br/>
+                            <strong>Items:</strong> ${order.items.map(item => item.name).join(', ')}
+                        </div>`;
+                    }).join('');
+                }
+
+                // Fetch consultations
+                const consultationsResponse = await fetch(`/api/consultations/user/${userId}`);
+                const consultations = await consultationsResponse.json();
+                const consultationsList = document.getElementById('consultationsList');
+                if (consultations.length === 0) {
+                    consultationsList.textContent = 'No consultations found.';
+                } else {
+                    consultationsList.innerHTML = consultations.map(c => {
+                        return `<div class="card mb-2 p-2">
+                            <strong>Consultation ID:</strong> ${c.id}<br/>
+                            <strong>Service:</strong> ${c.service_type}<br/>
+                            <strong>Scheduled Time:</strong> ${new Date(c.scheduled_time).toLocaleString()}<br/>
+                            <strong>Status:</strong> ${c.status}
+                        </div>`;
+                    }).join('');
+                }
+
+                // Handle profile form submission
+                document.getElementById('profileForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const newEmail = document.getElementById('email').value.trim();
+                    const newAddress = document.getElementById('address').value.trim();
+                    const profileMessage = document.getElementById('profileMessage');
+                    profileMessage.textContent = '';
+
+                    const updateData = {};
+                    if (newEmail && newEmail !== profile.email) {
+                        updateData.email = newEmail;
+                    }
+                    if (newAddress && newAddress !== profile.address) {
+                        updateData.address = newAddress;
+                    }
+                    if (Object.keys(updateData).length === 0) {
+                        profileMessage.style.color = 'red';
+                        profileMessage.textContent = 'No changes to update.';
+                        return;
+                    }
+
+                    try {
+                        const updateResponse = await fetch(`/api/users/${userId}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(updateData)
+                        });
+                        const updateResult = await updateResponse.json();
+                        if (updateResponse.ok) {
+                            profileMessage.style.color = 'green';
+                            profileMessage.textContent = 'Profile updated successfully.';
+                            if (updateData.email) {
+                                localStorage.setItem('userEmail', updateData.email);
+                            }
+                        } else {
+                            profileMessage.style.color = 'red';
+                            profileMessage.textContent = updateResult.error || 'Failed to update profile.';
+                        }
+                    } catch (error) {
+                        profileMessage.style.color = 'red';
+                        profileMessage.textContent = 'Error connecting to server.';
+                    }
+                });
+
+            } catch (error) {
+                document.getElementById('profileMessage').textContent = 'Error loading profile data.';
+            }
+        });
+    </script>
+</body>
+</html>

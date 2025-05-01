@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Kaivalya Astrology</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-light">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between w-100">
+                <div class="d-flex align-items-center">
+                    <a href="products.html" class="back-arrow me-3">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <a class="navbar-brand mb-0" href="index.html">
+                        <img src="logo.png" alt="Kaivalya Logo" class="logo">
+                        Kaivalya Astrology
+                    </a>
+                </div>
+                <div class="navbar-nav d-flex flex-row">
+                    <a class="nav-link px-3" href="index.html">Home</a>
+                    <a class="nav-link px-3" href="products.html">Products</a>
+                    <a class="nav-link px-3" href="consultation.html">Services</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Checkout Progress -->
+    <div class="checkout-progress">
+        <div class="container">
+            <div class="progress-steps">
+                <div class="progress-step active">
+                    <div class="step-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="step-label">Cart</div>
+                </div>
+                <div class="progress-step active">
+                    <div class="step-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <div class="step-label">Shipping</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="step-label">Payment</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="step-label">Confirmation</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Section -->
+    <section class="checkout-section">
+        <div class="container">
+            <div class="row">
+                <!-- Checkout Form -->
+                <div class="col-lg-8 order-lg-1">
+                    <div class="checkout-form">
+                        <!-- Shipping Information -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-map-marker-alt"></i> Shipping Information</h3>
+                            <form id="shippingForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="firstName">First Name</label>
+                                        <input type="text" class="form-control" id="firstName" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lastName">Last Name</label>
+                                        <input type="text" class="form-control" id="lastName" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="address">Street Address</label>
+                                    <input type="text" class="form-control" id="address" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="address2">Apartment, suite, etc. (optional)</label>
+                                    <input type="text" class="form-control" id="address2">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="city">City</label>
+                                        <input type="text" class="form-control" id="city" required>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label for="state">State</label>
+                                        <input type="text" class="form-control" id="state" required>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label for="zipCode">ZIP Code</label>
+                                        <input type="text" class="form-control" id="zipCode" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="country">Country</label>
+                                    <select class="form-control" id="country" required>
+                                        <option value="">Select Country</option>
+                                        <option value="US">United States</option>
+                                        <option value="CA">Canada</option>
+                                        <option value="GB">United Kingdom</option>
+                                        <option value="AU">Australia</option>
+                                        <option value="IN">India</option>
+                                    </select>
+                                </div>
+
+                                <!-- Shipping Method -->
+                                <div class="shipping-method mb-4">
+                                    <h4>Shipping Method</h4>
+                                    <div class="shipping-options">
+                                        <div class="shipping-option">
+                                            <input type="radio" id="standard" name="shipping" value="standard" checked>
+                                            <label for="standard">
+                                                <span class="option-name">Standard Shipping</span>
+                                                <span class="option-price">Free</span>
+                                                <span class="option-time">3-5 business days</span>
+                                            </label>
+                                        </div>
+                                        <div class="shipping-option">
+                                            <input type="radio" id="express" name="shipping" value="express">
+                                            <label for="express">
+                                                <span class="option-name">Express Shipping</span>
+                                                <span class="option-price">$15.00</span>
+                                                <span class="option-time">1-2 business days</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Information -->
+                                <div class="payment-section">
+                                    <h3><i class="fas fa-credit-card"></i> Payment Information</h3>
+                                    <div class="payment-methods mb-4">
+                                        <div class="payment-method active">
+                                            <input type="radio" id="creditCard" name="payment" value="credit" checked>
+                                            <label for="creditCard">
+                                                <i class="fas fa-credit-card"></i>
+                                                <span>Credit Card</span>
+                                            </label>
+                                        </div>
+                                        <div class="payment-method">
+                                            <input type="radio" id="paypal" name="payment" value="paypal">
+                                            <label for="paypal">
+                                                <i class="fab fa-paypal"></i>
+                                                <span>PayPal</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div id="creditCardForm">
+                                        <div class="mb-3">
+                                            <label for="cardNumber">Card Number</label>
+                                            <div class="card-input-wrapper">
+                                                <input type="text" class="form-control" id="cardNumber" required>
+                                                <div class="card-icons">
+                                                    <i class="fab fa-cc-visa"></i>
+                                                    <i class="fab fa-cc-mastercard"></i>
+                                                    <i class="fab fa-cc-amex"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="cardName">Name on Card</label>
+                                                <input type="text" class="form-control" id="cardName" required>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label for="expiryDate">Expiry Date</label>
+                                                <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" required>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label for="cvv">CVV</label>
+                                                <input type="text" class="form-control" id="cvv" required>
+                                                <div class="cvv-hint">
+                                                    <i class="fas fa-question-circle"></i>
+                                                    <div class="cvv-tooltip">The 3-digit code on the back of your card</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Order Protection -->
+                                <div class="order-protection mb-4">
+                                    <div class="protection-option">
+                                        <input type="checkbox" id="protection" checked>
+                                        <label for="protection">
+                                            <span class="protection-text">Add Order Protection</span>
+                                            <span class="protection-price">$4.99</span>
+                                            <div class="protection-details">
+                                                <i class="fas fa-shield-alt"></i>
+                                                <span>Protects against damage, loss, or theft during shipping</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">
+                                    <i class="fas fa-lock"></i> Place Order
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="col-lg-4 order-lg-2">
+                    <div class="order-summary">
+                        <h3>Order Summary</h3>
+                        <div class="order-items" id="orderItemsList">
+                            <!-- Cart items will be loaded here dynamically -->
+                        </div>
+                        <div class="order-totals">
+                            <div class="subtotal">
+                                <span>Subtotal</span>
+                                <span id="subtotal">$0.00</span>
+                            </div>
+                            <div class="shipping">
+                                <span>Shipping</span>
+                                <span id="shipping">Free</span>
+                            </div>
+                            <div class="protection">
+                                <span>Order Protection</span>
+                                <span id="protection">$4.99</span>
+                            </div>
+                            <div class="total">
+                                <span>Total</span>
+                                <span id="total">$0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Trust Badges -->
+                        <div class="trust-badges">
+                            <div class="badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Secure Checkout</span>
+                            </div>
+                            <div class="badge">
+                                <i class="fas fa-undo"></i>
+                                <span>30-Day Returns</span>
+                            </div>
+                            <div class="badge">
+                                <i class="fas fa-truck"></i>
+                                <span>Free Shipping</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2024 Kaivalya Astrology. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Stripe JS -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userEmail = localStorage.getItem('userEmail');
+            if (!userEmail) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Existing checkout page script below
+            // Get cart from localStorage
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const orderItemsList = document.getElementById('orderItemsList');
+            
+            // Check if cart is empty
+            if (cart.length === 0) {
+                // Check if there are URL parameters for a single product
+                const urlParams = new URLSearchParams(window.location.search);
+                const product = urlParams.get('product');
+                const quantity = urlParams.get('quantity');
+                const price = urlParams.get('price');
+                const size = urlParams.get('size');
+                const image = urlParams.get('image');
+                
+                // If there's a single product from URL parameters, add it to the order
+                if (product && price) {
+                    orderItemsList.innerHTML = `
+                        <div class="order-item">
+                            <div class="item-image">
+                                <img src="${image || 'product-placeholder.png'}" alt="${product}">
+                            </div>
+                            <div class="item-details">
+                                <h4>${product}</h4>
+                                <p class="item-size">Size: ${size || 'Standard'}</p>
+                                <p class="item-quantity">Quantity: ${quantity || '1'}</p>
+                            </div>
+                            <div class="item-price">
+                                <span>${price}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Update totals
+                    const subtotal = parseFloat(price.replace('$', ''));
+                    document.getElementById('subtotal').textContent = price;
+                    
+                    // Calculate shipping (example: free for orders over $50)
+                    const shipping = subtotal > 50 ? 0 : 10;
+                    document.getElementById('shipping').textContent = shipping === 0 ? 'Free' : '$' + shipping;
+                    
+                    // Calculate total with protection
+                    const protection = 4.99;
+                    const total = subtotal + shipping + protection;
+                    document.getElementById('total').textContent = '$' + total.toFixed(2);
+                } else {
+                    // No items in cart and no URL parameters
+                    orderItemsList.innerHTML = '<p class="empty-cart-message">Your cart is empty</p>';
+                    document.getElementById('subtotal').textContent = '$0.00';
+                    document.getElementById('shipping').textContent = '$0.00';
+                    document.getElementById('protection').textContent = '$0.00';
+                    document.getElementById('total').textContent = '$0.00';
+                }
+            } else {
+                // Display all items from cart
+                let cartHTML = '';
+                let subtotal = 0;
+                
+                cart.forEach(item => {
+                    const itemPrice = parseFloat(item.price.replace('$', ''));
+                    const itemTotal = itemPrice * item.quantity;
+                    subtotal += itemTotal;
+                    
+                    cartHTML += `
+                        <div class="order-item">
+                            <div class="item-image">
+                                <img src="${item.image}" alt="${item.name}">
+                            </div>
+                            <div class="item-details">
+                                <h4>${item.name}</h4>
+                                <p class="item-size">Size: ${item.size || 'Standard'}</p>
+                                <p class="item-quantity">Quantity: ${item.quantity}</p>
+                            </div>
+                            <div class="item-price">
+                                <span>$${itemTotal.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                orderItemsList.innerHTML = cartHTML;
+                
+                // Update totals
+                document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+                
+                // Calculate shipping (example: free for orders over $50)
+                const shipping = subtotal > 50 ? 0 : 10;
+                document.getElementById('shipping').textContent = shipping === 0 ? 'Free' : '$' + shipping;
+                
+                // Calculate total with protection
+                const protection = 4.99;
+                const total = subtotal + shipping + protection;
+                document.getElementById('total').textContent = '$' + total.toFixed(2);
+            }
+
+            // Handle shipping method change
+            document.querySelectorAll('input[name="shipping"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('$', ''));
+                    const protection = document.getElementById('protection').checked ? 4.99 : 0;
+                    const shipping = this.value === 'express' ? 15 : 0;
+                    
+                    document.getElementById('shipping').textContent = shipping === 0 ? 'Free' : '$' + shipping;
+                    const total = subtotal + shipping + protection;
+                    document.getElementById('total').textContent = '$' + total.toFixed(2);
+                });
+            });
+
+            // Handle protection toggle
+            document.getElementById('protection').addEventListener('change', function() {
+                const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('$', ''));
+                const shipping = document.querySelector('input[name="shipping"]:checked').value === 'express' ? 15 : 0;
+                const protection = this.checked ? 4.99 : 0;
+                
+                document.getElementById('protection').textContent = protection === 0 ? '$0.00' : '$' + protection;
+                const total = subtotal + shipping + protection;
+                document.getElementById('total').textContent = '$' + total.toFixed(2);
+            });
+
+            // Handle form submission
+            document.getElementById('shippingForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                submitBtn.disabled = true;
+
+                // Simulate processing
+                setTimeout(() => {
+                    // Clear cart after successful order
+                    localStorage.removeItem('cart');
+                    
+                    alert('Order placed successfully! Thank you for your purchase.');
+                    window.location.href = 'index.html';
+                }, 2000);
+            });
+
+            // Card number formatting
+            document.getElementById('cardNumber').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(\d{4})/g, '$1 ').trim();
+                e.target.value = value;
+            });
+
+            // Expiry date formatting
+            document.getElementById('expiryDate').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.slice(0,2) + '/' + value.slice(2,4);
+                }
+                e.target.value = value;
+            });
+        });
+    </script>
+</body>
+</html> 

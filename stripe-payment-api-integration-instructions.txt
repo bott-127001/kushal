@@ -1,0 +1,39 @@
+To integrate Stripe payment processing directly into your existing backend server, add the following code to your main server file (e.g., app.js or server.js):
+
+1. Install Stripe package if not already installed:
+   npm install stripe
+
+2. Require and configure Stripe with your secret key:
+   const Stripe = require('stripe');
+   const stripe = Stripe('your_stripe_secret_key_here'); // Replace with your actual secret key
+
+3. Add a new route to create a payment intent:
+
+   app.post('/api/create-payment-intent', async (req, res) => {
+     try {
+       const { amount, currency = 'usd' } = req.body;
+
+       if (!amount) {
+         return res.status(400).json({ error: 'Amount is required' });
+       }
+
+       const paymentIntent = await stripe.paymentIntents.create({
+         amount: Math.round(amount * 100), // amount in cents
+         currency,
+         payment_method_types: ['card'],
+       });
+
+       res.json({ clientSecret: paymentIntent.client_secret });
+     } catch (error) {
+       console.error('Error creating payment intent:', error);
+       res.status(500).json({ error: 'Internal Server Error' });
+     }
+   });
+
+4. Make sure your backend server is running and accessible.
+
+5. Update your frontend checkout page and script.js to call this endpoint to get the client secret and complete payment using Stripe.js.
+
+Note: Replace 'your_stripe_secret_key_here' with your actual Stripe secret key from your Stripe dashboard.
+
+This approach embeds the Stripe payment API directly into your existing backend server without creating a separate directory or file.

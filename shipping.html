@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shipping Rates & Tracking</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <header>
+        <nav>
+            <ul id="navLinks">
+                <!-- Auth links will be dynamically inserted here -->
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Shipping Rates</h1>
+        <form id="shippingRatesForm">
+            <fieldset>
+                <legend>From Address</legend>
+                <label>Street:</label><br />
+                <input type="text" id="fromStreet" required /><br />
+                <label>City:</label><br />
+                <input type="text" id="fromCity" required /><br />
+                <label>State:</label><br />
+                <input type="text" id="fromState" required /><br />
+                <label>Zip:</label><br />
+                <input type="text" id="fromZip" required /><br />
+                <label>Country:</label><br />
+                <input type="text" id="fromCountry" required /><br />
+            </fieldset>
+
+            <fieldset>
+                <legend>To Address</legend>
+                <label>Street:</label><br />
+                <input type="text" id="toStreet" required /><br />
+                <label>City:</label><br />
+                <input type="text" id="toCity" required /><br />
+                <label>State:</label><br />
+                <input type="text" id="toState" required /><br />
+                <label>Zip:</label><br />
+                <input type="text" id="toZip" required /><br />
+                <label>Country:</label><br />
+                <input type="text" id="toCountry" required /><br />
+            </fieldset>
+
+            <fieldset>
+                <legend>Parcel</legend>
+                <label>Length (inches):</label><br />
+                <input type="number" id="parcelLength" min="0" step="0.1" required /><br />
+                <label>Width (inches):</label><br />
+                <input type="number" id="parcelWidth" min="0" step="0.1" required /><br />
+                <label>Height (inches):</label><br />
+                <input type="number" id="parcelHeight" min="0" step="0.1" required /><br />
+                <label>Weight (ounces):</label><br />
+                <input type="number" id="parcelWeight" min="0" step="0.1" required /><br />
+            </fieldset>
+
+            <button type="submit">Get Shipping Rates</button>
+        </form>
+
+        <h2>Available Shipping Rates</h2>
+        <div id="shippingRatesResult"></div>
+
+        <h1>Track Shipment</h1>
+        <form id="trackingForm">
+            <label for="trackingCode">Tracking Code:</label><br />
+            <input type="text" id="trackingCode" required /><br />
+            <button type="submit">Track</button>
+        </form>
+        <div id="trackingResult"></div>
+    </main>
+
+    <script src="script.js"></script>
+    <script src="shipping.js"></script>
+</body>
+</html>

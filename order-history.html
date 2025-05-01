@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Order History - Kaivalya Astrology</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="logo.png" alt="Kaivalya Logo" class="logo" />
+                Kaivalya Astrology
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto" id="navLinks">
+                    <!-- Auth links will be dynamically inserted by script.js -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="container my-5">
+        <h2>Your Order History</h2>
+        <div id="orderHistoryList">Loading orders...</div>
+    </section>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof updateNavbarAuthLinks === 'function') {
+                updateNavbarAuthLinks();
+            }
+
+            const userEmail = localStorage.getItem('userEmail');
+            if (!userEmail) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const usersResponse = await fetch('/api/users');
+                const users = await usersResponse.json();
+                const user = users.find(u => u.email === userEmail);
+                if (!user) {
+                    document.getElementById('orderHistoryList').textContent = 'User not found.';
+                    return;
+                }
+                const userId = user.id;
+
+                const ordersResponse = await fetch(`/api/orders/user/${userId}`);
+                const orders = await ordersResponse.json();
+
+                const orderHistoryList = document.getElementById('orderHistoryList');
+                if (orders.length === 0) {
+                    orderHistoryList.textContent = 'No orders found.';
+                } else {
+                    orderHistoryList.innerHTML = orders.map(order => {
+                        return `<div class="card mb-3 p-3">
+                            <strong>Order ID:</strong> ${order.id}<br/>
+                            <strong>Status:</strong> ${order.status}<br/>
+                            <strong>Total:</strong> $${order.total.toFixed(2)}<br/>
+                            <strong>Items:</strong> ${order.items.map(item => item.name).join(', ')}<br/>
+                            <strong>Shipping Address:</strong> ${order.shipping_address}
+                        </div>`;
+                    }).join('');
+                }
+            } catch (error) {
+                document.getElementById('orderHistoryList').textContent = 'Error loading order history.';
+            }
+        });
+    </script>
+</body>
+</html>
