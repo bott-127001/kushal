@@ -119,7 +119,7 @@ function BlogPage () {
   return (
     <div className='min-h-screen flex flex-col bg-[#faf9fb]'>
       {/* Hero/Banner */}
-      <section className='w-full bg-[#a7a7a7] py-14 px-4'>
+      <section className='w-full bg-[#003D37] py-14 px-4'>
         <div className='max-w-5xl mx-auto'>
           <h1 className='text-2xl md:text-3xl font-serif font-bold text-white mb-4'>{blog.title}</h1>
           <div className='flex items-center gap-4 text-white text-sm'>
@@ -135,17 +135,17 @@ function BlogPage () {
           <p className='text-gray-700 text-base mb-6'>{blog.summary}</p>
           {/* Did You Know Box (optional, show if blog.didYouKnow exists) */}
           {blog.didYouKnow && blog.didYouKnow.length > 0 && (
-            <div className='bg-[#f8f6ed] border-l-4 border-[#FFD700] rounded-lg p-5 mb-8'>
+            <div className='bg-[#e6f0ee] border-l-4 border-[#003D37] rounded-lg p-5 mb-8'>
               <div className='flex items-center mb-2'>
-                <svg width='22' height='22' fill='none' stroke='#FFD700' strokeWidth='2' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'/><path d='M12 8v4l3 3'/></svg>
-                <span className='ml-2 font-bold text-[#bfa43a]'>Did You Know?</span>
+                <svg width='22' height='22' fill='none' stroke='#003D37' strokeWidth='2' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10'/><path d='M12 8v4l3 3'/></svg>
+                <span className='ml-2 font-bold text-[#003D37]'>Did You Know?</span>
               </div>
-              <ul className='list-disc list-inside text-[#7a6a2f] text-sm pl-2'>
+              <ul className='list-disc list-inside text-[#003D37] text-sm pl-2'>
                 {blog.didYouKnow.map((fact, i) => <li key={i}>{fact}</li>)}
               </ul>
             </div>
           )}
-          {blog.sectionHeading && <h2 className='text-lg font-serif font-bold text-[#1a2a6c] mb-3'>{blog.sectionHeading}</h2>}
+          {blog.sectionHeading && <h2 className='text-lg font-serif font-bold text-[#003D37] mb-3'>{blog.sectionHeading}</h2>}
           {blog.sectionText && <p className='text-gray-700 text-base mb-6'>{blog.sectionText}</p>}
           {/* Main content (for now, render as plain text) */}
           <div className='prose prose-lg max-w-none text-gray-800' style={{ whiteSpace: 'pre-line' }}>{blog.content}</div>
@@ -153,48 +153,48 @@ function BlogPage () {
         {/* Sidebar */}
         <aside className='w-full md:w-80 flex flex-col gap-8'>
           {/* Related Blogs */}
-          <div className='bg-white border border-[#FFD700] rounded-xl shadow p-6'>
-            <h3 className='font-serif font-bold text-base mb-4 text-[#23233a]'>Related Blogs</h3>
+          <div className='bg-white border border-[#003D37] rounded-xl shadow p-6'>
+            <h3 className='font-serif font-bold text-base mb-4 text-[#003D37]'>Related Blogs</h3>
             {relatedLoading && <div className='text-gray-500'>Loading related blogs...</div>}
             {relatedError && <div className='text-red-500'>{relatedError}</div>}
             {!relatedLoading && !relatedError && relatedBlogs.length === 0 && <div className='text-gray-500'>No related blogs found.</div>}
             <ul className='space-y-4'>
               {!relatedLoading && !relatedError && relatedBlogs.map(b => (
                 <li key={b._id}>
-                  <Link to={`/blogs/${b._id}`} className='font-semibold text-[#D4AF37] hover:underline'>{b.title}</Link>
+                  <Link to={`/blogs/${b._id}`} className='font-semibold text-[#003D37] hover:underline'>{b.title}</Link>
                   <div className='text-xs text-gray-500'>{new Date(b.date).toLocaleDateString()}</div>
                 </li>
               ))}
             </ul>
           </div>
           {/* Book a Consultation */}
-          <div className='bg-[#f8f6ed] border border-[#FFD700] rounded-xl shadow p-6'>
-            <h3 className='font-serif font-bold text-base mb-4 text-[#23233a]'>Book a Consultation</h3>
+          <div className='bg-[#e6f0ee] border border-[#003D37] rounded-xl shadow p-6'>
+            <h3 className='font-serif font-bold text-base mb-4 text-[#003D37]'>Book a Consultation</h3>
             <p className='text-xs text-gray-700 mb-3'>Get personalized guidance about your zodiac and gemstones.</p>
             <form className='flex flex-col gap-3'>
-              <input type='text' placeholder='Your Name' className='border border-[#FFD700] rounded px-3 py-2 text-sm' />
-              <input type='email' placeholder='Your Email' className='border border-[#FFD700] rounded px-3 py-2 text-sm' />
-              <select className='border border-[#FFD700] rounded px-3 py-2 text-sm'>
+              <input type='text' placeholder='Your Name' className='border border-[#003D37] rounded px-3 py-2 text-sm' />
+              <input type='email' placeholder='Your Email' className='border border-[#003D37] rounded px-3 py-2 text-sm' />
+              <select className='border border-[#003D37] rounded px-3 py-2 text-sm'>
                 <option>Select Consultation Type</option>
                 {consultationTypes.map(type => <option key={type}>{type}</option>)}
               </select>
-              <button className='px-4 py-2 bg-[#FFD700] text-white rounded font-semibold text-sm mt-2'>Schedule Consultation</button>
+              <button className='px-4 py-2 bg-[#003D37] text-white rounded font-semibold text-sm mt-2'>Schedule Consultation</button>
             </form>
           </div>
         </aside>
       </main>
       {/* Recommended Products */}
-      <section className='w-full bg-[#f8f6ed] py-10 px-4'>
+      <section className='w-full bg-[#e6f0ee] py-10 px-4'>
         <div className='max-w-5xl mx-auto'>
-          <h3 className='font-serif font-bold text-base mb-6 text-[#23233a]'>Recommended Products</h3>
+          <h3 className='font-serif font-bold text-base mb-6 text-[#003D37]'>Recommended Products</h3>
           {recLoading && <div className='text-gray-500'>Loading recommended products...</div>}
           {recError && <div className='text-red-500'>{recError}</div>}
           <div className='grid grid-cols-2 sm:grid-cols-4 gap-6'>
             {!recLoading && !recError && recommended.map((prod, i) => (
-              <div key={prod._id || i} className='bg-white border border-[#FFD700] rounded-lg p-4 flex flex-col items-start'>
+              <div key={prod._id || i} className='bg-white border border-[#003D37] rounded-lg p-4 flex flex-col items-start'>
                 <span className='font-semibold text-sm mb-2'>{prod.title}</span>
-                <span className='text-[#bfa43a] font-bold mb-3'>{prod.price}</span>
-                <button className='px-3 py-1 bg-[#FFD700] text-white rounded text-xs font-semibold'>Add to Cart</button>
+                <span className='text-[#003D37] font-bold mb-3'>{prod.price}</span>
+                <button className='px-3 py-1 bg-[#003D37] text-white rounded text-xs font-semibold'>Add to Cart</button>
               </div>
             ))}
           </div>
