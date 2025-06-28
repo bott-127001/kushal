@@ -16,7 +16,7 @@ function AdminUsers () {
     setLoading(true)
     setError(null)
     const token = localStorage.getItem('adminToken')
-    fetch('http://localhost:5000/api/users', {
+    fetch('/api/users', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -54,7 +54,7 @@ function AdminUsers () {
     const token = localStorage.getItem('adminToken')
     try {
       const endpoint = user.isBlocked ? 'unblock' : 'block'
-      const res = await fetch(`http://localhost:5000/api/users/${user._id}/${endpoint}`, {
+      const res = await fetch(`/api/users/${user._id}/${endpoint}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -76,7 +76,7 @@ function AdminUsers () {
     setDeleteError(null)
     const token = localStorage.getItem('adminToken')
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${deleteId}`, {
+      const res = await fetch(`/api/users/${deleteId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
