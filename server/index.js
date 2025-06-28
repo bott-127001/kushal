@@ -182,15 +182,38 @@ const upload = multer({ storage })
 
 // Auth endpoints
 app.post('/api/auth/register', async (req, res) => {
-  const { email, password } = req.body
+  const { email, password, name } = req.body
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' })
   try {
+    console.log(`Registration attempt for email: ${email}`)
     const existing = await User.findOne({ email })
-    if (existing) return res.status(409).json({ error: 'Email already registered' })
-    const hash = await bcrypt.hash(password, 10)
-    const user = await User.create({ email, password: hash })
-    res.json({ success: true, user: { email: user.email } })
+    if (existing) {
+      console.log(`User exists with email: ${email}, password: ${existing.password}, isVerified: ${existing.isVerified}`)
+      // Check if this is a temporary user created during OTP request
+      if (existing.password === 'temp' && existing.isVerified) {
+        console.log(`Updating temporary user for email: ${email}`)
+        // Update the temporary user with real password
+        const hash = await bcrypt.hash(password, 10)
+        existing.password = hash
+        if (name) existing.name = name
+        await existing.save()
+        console.log(`Successfully updated temporary user for email: ${email}`)
+        res.json({ success: true, user: { email: existing.email } })
+      } else {
+        console.log(`Real user already exists for email: ${email}`)
+        // Real user already exists
+        return res.status(409).json({ error: 'Email already registered' })
+      }
+    } else {
+      console.log(`Creating new user for email: ${email}`)
+      // Create new user
+      const hash = await bcrypt.hash(password, 10)
+      const user = await User.create({ email, password: hash, name })
+      console.log(`Successfully created new user for email: ${email}`)
+      res.json({ success: true, user: { email: user.email } })
+    }
   } catch (err) {
+    console.error('Registration error:', err)
     res.status(500).json({ error: 'Registration failed' })
   }
 })
@@ -199,13 +222,29 @@ app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' })
   try {
+    console.log(`Login attempt for email: ${email}`)
     const user = await User.findOne({ email })
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' })
+    if (!user) {
+      console.log(`No user found for email: ${email}`)
+      return res.status(401).json({ error: 'Invalid credentials' })
+    }
+    
+    console.log(`User found for email: ${email}, password type: ${user.password === 'temp' ? 'temp' : 'hashed'}`)
+    
+    // Prevent login for temporary users that haven't been properly registered
+    if (user.password === 'temp') {
+      console.log(`Login blocked for temporary user: ${email}`)
+      return res.status(401).json({ error: 'Please complete your registration first' })
+    }
+    
     const match = await bcrypt.compare(password, user.password)
+    console.log(`Password match for ${email}: ${match}`)
     if (!match) return res.status(401).json({ error: 'Invalid credentials' })
     const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '7d' })
+    console.log(`Login successful for email: ${email}`)
     res.json({ success: true, token, user: { email: user.email } })
   } catch (err) {
+    console.error('Login error:', err)
     res.status(500).json({ error: 'Login failed' })
   }
 })
@@ -1563,6 +1602,15 @@ app.post('/api/auth/verify-otp', async (req, res) => {
     user.otp = undefined
     user.otpExpires = undefined
     await user.save()
+    
+    // Clean up temporary users that are older than 1 hour and haven't been verified
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
+    await User.deleteMany({
+      password: 'temp',
+      isVerified: { $ne: true },
+      createdAt: { $lt: oneHourAgo }
+    })
+    
     res.json({ success: true })
   } catch (err) {
     res.status(500).json({ error: 'OTP verification failed' })
@@ -1832,6 +1880,40 @@ app.get('*', (req, res) => {
 })
 
 app.listen(5000, () => console.log('Server running on http://localhost:5000')) 
+
+// One-time cleanup of existing temporary users on server start
+setTimeout(async () => {
+  try {
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
+    const result = await User.deleteMany({
+      password: 'temp',
+      isVerified: { $ne: true },
+      createdAt: { $lt: oneHourAgo }
+    })
+    if (result.deletedCount > 0) {
+      console.log(`Initial cleanup: Removed ${result.deletedCount} old temporary users`)
+    }
+  } catch (err) {
+    console.error('Error during initial temporary user cleanup:', err)
+  }
+}, 5000) // Run 5 seconds after server starts
+
+// Periodic cleanup of temporary users (runs every hour)
+setInterval(async () => {
+  try {
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
+    const result = await User.deleteMany({
+      password: 'temp',
+      isVerified: { $ne: true },
+      createdAt: { $lt: oneHourAgo }
+    })
+    if (result.deletedCount > 0) {
+      console.log(`Cleaned up ${result.deletedCount} temporary users`)
+    }
+  } catch (err) {
+    console.error('Error during temporary user cleanup:', err)
+  }
+}, 60 * 60 * 1000) // Run every hour
 
 // Helper function to create beautiful OTP email template
 function createOTPEmailTemplate(otp, email) {
