@@ -22,7 +22,7 @@ function OrderHistory () {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/my-orders', {
+        const response = await fetch('/api/my-orders', {
           headers: {
             Authorization: `Bearer ${token}`
           }
