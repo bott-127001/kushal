@@ -18,7 +18,7 @@ function AdminOrders () {
     setLoading(true)
     setError(null)
     const token = localStorage.getItem('adminToken')
-    fetch('http://localhost:5000/api/orders', {
+    fetch('/api/orders', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -57,7 +57,7 @@ function AdminOrders () {
     setStatusLoading(true)
     const token = localStorage.getItem('adminToken')
     try {
-      const res = await fetch(`http://localhost:5000/api/orders/${statusOrderId}/status`, {
+      const res = await fetch(`/api/orders/${statusOrderId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ function AdminOrders () {
     setDeleteError(null)
     const token = localStorage.getItem('adminToken')
     try {
-      const res = await fetch(`http://localhost:5000/api/orders/${deleteId}`, {
+      const res = await fetch(`/api/orders/${deleteId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
