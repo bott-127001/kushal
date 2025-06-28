@@ -21,7 +21,7 @@ function AdminProducts () {
   function fetchProducts () {
     setLoading(true)
     setError(null)
-    fetch('http://localhost:5000/api/products')
+    fetch('/api/products')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch products')
         return res.json()
@@ -87,7 +87,7 @@ function AdminProducts () {
     try {
       let res, data
       if (editId) {
-        res = await fetch(`http://localhost:5000/api/products/${editId}`, {
+        res = await fetch(`/api/products/${editId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ function AdminProducts () {
     setDeleteError(null)
     const token = localStorage.getItem('adminToken')
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${deleteId}`, {
+      const res = await fetch(`/api/products/${deleteId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
