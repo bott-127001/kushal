@@ -96,7 +96,7 @@ function AdminProducts () {
           body: JSON.stringify(form)
         })
       } else {
-        res = await fetch('http://localhost:5000/api/products', {
+        res = await fetch('/api/products', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
