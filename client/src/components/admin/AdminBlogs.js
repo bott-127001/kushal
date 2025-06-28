@@ -27,7 +27,7 @@ function AdminBlogs () {
   function fetchBlogs () {
     setLoading(true)
     setError(null)
-    fetch('http://localhost:5000/api/blogs')
+    fetch('/api/blogs')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch blogs')
         return res.json()
@@ -140,7 +140,7 @@ function AdminBlogs () {
       if (!payload.readTime) payload.readTime = '5 min' // fallback default
       if (!payload.summary) payload.summary = form.content.slice(0, 120) + '...'
       if (editId) {
-        res = await fetch(`http://localhost:5000/api/blogs/${editId}`, {
+        res = await fetch(`/api/blogs/${editId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ function AdminBlogs () {
           body: JSON.stringify(payload)
         })
       } else {
-        res = await fetch('http://localhost:5000/api/blogs', {
+        res = await fetch('/api/blogs', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -176,7 +176,7 @@ function AdminBlogs () {
     setDeleteError(null)
     const token = localStorage.getItem('adminToken')
     try {
-      const res = await fetch(`http://localhost:5000/api/blogs/${deleteId}`, {
+      const res = await fetch(`/api/blogs/${deleteId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
