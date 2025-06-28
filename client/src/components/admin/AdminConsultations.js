@@ -11,7 +11,7 @@ function AdminConsultations () {
     setLoading(true)
     setError(null)
     const token = localStorage.getItem('adminToken')
-    fetch('http://localhost:5000/api/consultations/all', {
+    fetch('/api/consultations/all', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
