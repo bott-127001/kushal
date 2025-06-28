@@ -25,7 +25,7 @@ function ConsultationHistory () {
   useEffect(() => {
     const fetchConsultations = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/consultations', {
+        const response = await fetch('/api/consultations', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -95,7 +95,7 @@ function ConsultationHistory () {
       return
     }
     try {
-      const res = await fetch(`http://localhost:5000/api/consultations/${consultation._id}`, {
+      const res = await fetch(`/api/consultations/${consultation._id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       })
