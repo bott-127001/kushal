@@ -19,7 +19,7 @@ const app = express()
 app.use(cors({
   origin: [
     'http://localhost:3000', // For local development
-    'https://kushal-d6vv.onrender.com' // Your Render production domain
+    'https://kushal-15gt.onrender.com' // Your Render production domain
   ],
   credentials: true
 }))
@@ -1273,7 +1273,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     await user.save()
 
     // Send reset email
-    const resetUrl = `https://kushal-d6vv.onrender.com/reset-password?token=${resetToken}`
+    const resetUrl = `https://kushal-15gt.onrender.com/reset-password?token=${resetToken}`
     const mailOptions = {
       from: process.env.GMAIL_USER || 'kuchbhilelo107@gmail.com',
       to: email,
