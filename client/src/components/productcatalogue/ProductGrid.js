@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 function ProductGrid ({ products, addToCart, cartItems = [] }) {
   const navigate = useNavigate()
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8'>
+    <div className='grid grid-cols-2 gap-3'>
       {products.map(product => (
         <ProductCard
           key={product.id || product._id}
