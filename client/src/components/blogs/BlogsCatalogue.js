@@ -231,7 +231,7 @@ function BlogsCatalogue () {
         {/* Main Content */}
         <main className='flex flex-col md:flex-row max-w-7xl mx-auto px-4 gap-8 py-10 flex-1'>
           {/* Blog Cards Grid */}
-          <div className='flex-1 grid grid-cols-2 gap-8'>
+          <div className='grid grid-cols-2 gap-8 mb-8'>
             {loading && <div className='col-span-full text-center text-gray-500'>Loading blogs...</div>}
             {error && <div className='col-span-full text-center text-red-500'>{error}</div>}
             {!loading && !error && blogs.length === 0 && <div className='col-span-full text-center text-gray-500'>No blogs found.</div>}
@@ -263,9 +263,9 @@ function BlogsCatalogue () {
             <div className='bg-white border border-[#003D37] rounded-xl shadow p-6'>
               <h3 className='font-serif font-bold text-base mb-4 text-[#003D37]'>Newsletter</h3>
               <p className='text-sm text-gray-600 mb-4'>Subscribe for weekly astrological insights and exclusive offers.</p>
-              <div className='flex gap-2'>
-                <input type='email' placeholder='Your email address' className='flex-1 border border-[#003D37] rounded px-3 py-2 text-sm' />
-                <button className='px-4 py-2 bg-[#003D37] text-white rounded font-semibold text-sm'>Subscribe</button>
+              <div className='flex gap-2 items-center'>
+                <input type='email' placeholder='Your email address' className='flex-1 min-w-0 border border-[#003D37] rounded px-3 py-2 text-sm' />
+                <button className='px-4 py-2 bg-[#003D37] text-white rounded font-semibold text-sm whitespace-nowrap shrink-0'>Subscribe</button>
               </div>
             </div>
           </aside>
