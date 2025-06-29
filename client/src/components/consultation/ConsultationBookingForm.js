@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import useAuth from '../../store/auth'
 import PropTypes from 'prop-types'
+import API_ENDPOINTS from '../../config/api'
 
 const allSlots = [
   '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM',
@@ -26,7 +27,7 @@ function ConsultationBookingForm ({ selectedPackage }) {
   const [blockMsg, setBlockMsg] = useState('')
 
   useEffect(() => {
-    fetch('/api/settings/consultation-blocked')
+    fetch(API_ENDPOINTS.SETTINGS)
       .then(res => res.json())
       .then(data => {
         setIsConsultationBlocked(!!data.isConsultationBlocked)
@@ -45,7 +46,7 @@ function ConsultationBookingForm ({ selectedPackage }) {
   useEffect(() => {
     if (!form.date) return setAvailableSlots(allSlots)
     setAvailableSlots([])
-    fetch(`/api/consultations/slots?date=${form.date}`)
+    fetch(`${API_ENDPOINTS.CONSULTATION_SLOTS}?date=${form.date}`)
       .then(res => res.json())
       .then(data => {
         let slots = data.availableSlots || allSlots
@@ -94,7 +95,7 @@ function ConsultationBookingForm ({ selectedPackage }) {
         setLoading(false)
         return
       }
-      const res = await fetch('/api/consultations', {
+      const res = await fetch(API_ENDPOINTS.CONSULTATIONS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(form)
