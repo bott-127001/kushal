@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import Footer from '../homepage/Footer'
 import Newsletter from '../homepage/Newsletter'
+import API_ENDPOINTS from '../../config/api'
 
 function BlogPage () {
   const { id } = useParams()
@@ -25,7 +26,7 @@ function BlogPage () {
 
   useEffect(() => {
     setLoading(true)
-    fetch(`/api/blogs/${id}`)
+    fetch(API_ENDPOINTS.BLOG_DETAILS(id))
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch blog')
         return res.json()
@@ -48,7 +49,7 @@ function BlogPage () {
     // If blog.relatedProducts exists and is non-empty, try to fetch by name
     if (blog.relatedProducts && blog.relatedProducts.length > 0) {
       // For now, fetch all products and filter by name (since no /api/products?ids=... endpoint)
-      fetch('/api/products')
+      fetch(API_ENDPOINTS.PRODUCTS)
         .then(res => res.json())
         .then(data => {
           const filtered = data.products.filter(p => blog.relatedProducts.includes(p.title))
@@ -61,7 +62,7 @@ function BlogPage () {
         })
     } else {
       // Fallback: fetch random recommendations
-      fetch('/api/products/recommendations')
+      fetch(`${API_ENDPOINTS.PRODUCTS}/recommendations`)
         .then(res => res.json())
         .then(data => {
           setRecommended(data)
@@ -84,7 +85,7 @@ function BlogPage () {
     params.append('limit', 10)
     params.append('sortBy', 'date')
     params.append('order', 'desc')
-    fetch(`/api/blogs?${params.toString()}`)
+    fetch(`${API_ENDPOINTS.BLOGS}?${params.toString()}`)
       .then(res => res.json())
       .then(data => {
         // Filter blogs that share at least one tag and are not the current blog
