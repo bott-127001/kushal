@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import useAuth from '../../store/auth'
 import useCart from '../../store/cart'
 import AuthPromptModal from './AuthPromptModal'
@@ -95,7 +95,7 @@ function FeaturedGemstones () {
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 w-full max-w-6xl px-2'>
           {gemstones.map((gem, i) => (
             <div key={gem._id || gem.title} className='flex flex-col justify-between bg-gray-50 rounded-xl shadow border border-gray-100 p-4 md:p-8 min-h-[120px] md:min-h-[180px]'>
-              <div>
+              <Link to={`/products/${gem._id || gem.id}`} className='flex-1 flex flex-col cursor-pointer' style={{ textDecoration: 'none' }}>
                 <img
                   src={getImageSrc(gem)}
                   alt={gem.title}
@@ -114,7 +114,7 @@ function FeaturedGemstones () {
                     ${parseFloat(gem.price).toFixed(2)}
                   </span>
                 </div>
-              </div>
+              </Link>
               <button
                 className='self-end md:self-center px-4 py-1.5 md:px-6 md:py-2 bg-[#003D37] text-white font-serif rounded transition hover:bg-[#002824] text-xs md:text-base'
                 onClick={() => handleAddToCart(gem)}
