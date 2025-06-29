@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://kushal-15gt.onrender.com'
+import API_ENDPOINTS from '../../config/api'
 
 function AdminProducts () {
   const [products, setProducts] = useState([])
@@ -183,7 +182,7 @@ function AdminProducts () {
                 <tr key={product._id} className='border-t border-[#FFD700]'>
                   <td className='py-2 px-4'>
                     <img 
-                      src={product.image?.startsWith('/uploads/') ? backendUrl + product.image : product.image || '/logo-removebg-preview.png'} 
+                      src={product.image?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + product.image : product.image || '/logo-removebg-preview.png'} 
                       alt={product.title} 
                       className='w-16 h-16 object-cover rounded'
                       onError={(e) => { e.target.src = '/logo-removebg-preview.png' }}
@@ -215,10 +214,10 @@ function AdminProducts () {
               {isDragActive ? <p>Drop the images here ...</p> : <p>Drag & drop images here, or click to select files</p>}
               <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
                 {imagePreviews.map(url => (
-                  <img key={url} src={url?.startsWith('/uploads/') ? backendUrl + url : url} alt='preview' style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }} />
+                  <img key={url} src={url?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + url : url} alt='preview' style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }} />
                 ))}
                 {form.image && !imagePreviews.length && (
-                  <img src={form.image?.startsWith('/uploads/') ? backendUrl + form.image : form.image} alt='preview' style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }} />
+                  <img src={form.image?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + form.image : form.image} alt='preview' style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }} />
                 )}
               </div>
               {uploading && <div style={{ marginTop: 8 }}>Uploading...</div>}
