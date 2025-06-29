@@ -27,6 +27,8 @@ import Navbar from './components/homepage/Navbar'
 import CheckoutPage from './components/productcatalogue/CheckoutPage'
 import AdminLayout from './components/admin/AdminLayout'
 import VideoRoomPage from './components/consultation/VideoRoomPage'
+import ShippingInformation from './components/homepage/ShippingInformation'
+import ReturnsExchanges from './components/homepage/ReturnsExchanges'
 
 function PageTransition ({ children }) {
   const [show, setShow] = React.useState(false)
@@ -87,6 +89,8 @@ function App () {
         <Route path='/profile' element={<PageTransition><ProfilePage /></PageTransition>} />
         <Route path='/checkout' element={<PageTransition><CheckoutPage /></PageTransition>} />
         <Route path='/payment-status' element={<PageTransition><PaymentStatus /></PageTransition>} />
+        <Route path='/shipping-info' element={<PageTransition><ShippingInformation /></PageTransition>} />
+        <Route path='/returns-exchanges' element={<PageTransition><ReturnsExchanges /></PageTransition>} />
         <Route path='/video-room/:consultationId' element={<VideoRoomPage />} />
       </Routes>
     </BrowserRouter>
