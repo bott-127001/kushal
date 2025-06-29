@@ -43,6 +43,7 @@ function ProductCatalogue () {
   const [pageTransition, setPageTransition] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const { isAuthenticated } = useAuth()
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -155,114 +156,101 @@ function ProductCatalogue () {
       />
       <main className='flex-grow'>
         <CatalogueHero />
-        <div className='py-6' />
-        <div className='flex flex-col md:flex-row max-w-7xl mx-auto px-4 gap-8'>
-          <Filters selectedFilters={filters} onChange={setFilters} />
-          <div className='flex-1 py-8'>
-            <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4'>
-              <div />
-              <div className='relative inline-block text-left'>
-                <button
-                  type='button'
-                  className='inline-flex items-center border border-gray-300 rounded px-2 py-1.5 text-xs bg-white shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003D37] transition-all duration-150'
-                  onClick={() => setSortDropdownOpen(v => !v)}
-                  aria-haspopup='listbox'
-                  aria-expanded={sortDropdownOpen}
-                  style={{ minWidth: 0 }}
-                >
-                  <span className='flex items-center'>
-                    {SORT_OPTIONS.find(opt => opt.value === sort)?.icon}
-                    <span className='ml-1'>{SORT_OPTIONS.find(opt => opt.value === sort)?.label}</span>
-                  </span>
-                  <svg className='w-3 h-3 ml-1 text-gray-400' fill='none' stroke='currentColor' strokeWidth='2' viewBox='0 0 24 24'><path d='M19 9l-7 7-7-7' /></svg>
-                </button>
-                {sortDropdownVisible && (
-                  <ul
-                    className={`absolute right-0 z-10 mt-2 w-44 bg-white border border-gray-200 rounded shadow-lg py-1 text-xs origin-top-right transition-all duration-350 ${sortDropdownOpen ? 'animate-fadeScaleIn' : 'animate-fadeScaleOut'}`}
-                    role='listbox'
-                  >
-                    {SORT_OPTIONS.map(opt => (
-                      <li
-                        key={opt.value}
-                        className={`flex items-center px-3 py-2 cursor-pointer transition-all duration-100 rounded ${sort === opt.value ? 'bg-gray-100 font-semibold text-[#003D37]' : 'hover:bg-gray-50 hover:text-[#003D37]'}`}
-                        onClick={() => handleSortSelect(opt.value)}
-                        role='option'
-                        aria-selected={sort === opt.value}
-                      >
-                        <span className={`mr-2 ${sort === opt.value ? 'text-[#003D37]' : 'text-gray-400 group-hover:text-[#003D37]'}`}>{opt.icon}</span>
-                        {opt.label}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <style>{`
-                  @keyframes fadeScaleIn {
-                    0% { opacity: 0; transform: scale(0.95) translateY(-8px); }
-                    100% { opacity: 1; transform: scale(1) translateY(0); }
-                  }
-                  @keyframes fadeScaleOut {
-                    0% { opacity: 1; transform: scale(1) translateY(0); }
-                    100% { opacity: 0; transform: scale(0.95) translateY(-8px); }
-                  }
-                  .animate-fadeScaleIn {
-                    animation: fadeScaleIn 0.35s cubic-bezier(0.4,0,0.2,1) both;
-                  }
-                  .animate-fadeScaleOut {
-                    animation: fadeScaleOut 0.35s cubic-bezier(0.4,0,0.2,1) both;
-                  }
-                `}</style>
-              </div>
+        <div className='py-4 md:py-6' />
+        <div className='max-w-7xl mx-auto px-1 md:px-4'>
+          <div className='flex items-center justify-between mb-2 md:mb-6 gap-2 md:gap-6'>
+            <div className='flex-1 flex items-center overflow-x-auto gap-2 scrollbar-hide'>
+              <Filters selectedFilters={filters} onChange={setFilters} />
             </div>
-            {lastAddedId && (
-              <div className='fixed top-6 right-6 z-50 bg-[#003D37] text-white px-6 py-3 rounded shadow font-semibold animate-fadeInToast'
-                onAnimationEnd={clearLastAdded}
+            <div className='flex-shrink-0 flex items-center'>
+              <button
+                type='button'
+                className='inline-flex items-center border border-gray-300 rounded px-2 py-1 h-10 text-xs md:text-sm bg-white shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003D37] transition-all duration-150'
+                onClick={() => setSortDropdownOpen(v => !v)}
+                aria-haspopup='listbox'
+                aria-expanded={sortDropdownOpen}
               >
-                Added to cart!
-                <style>{`
-                  @keyframes fadeInToast {
-                    0% { opacity: 0; transform: translateY(-20px); }
-                    10% { opacity: 1; transform: translateY(0); }
-                    90% { opacity: 1; transform: translateY(0); }
-                    100% { opacity: 0; transform: translateY(-20px); }
-                  }
-                  .animate-fadeInToast {
-                    animation: fadeInToast 2s ease-in-out;
-                  }
-                `}</style>
-              </div>
-            )}
-            {loading && <div className='text-gray-500'>Loading products...</div>}
-            {error && <div className='text-red-500'>{error}</div>}
-            {!loading && !error && <ProductGrid products={filteredProducts} addToCart={product => handleProtectedAddToCart(product, addToCart)} cartItems={cartItems} />}
-            {/* Pagination Controls */}
-            {!loading && !error && totalPages > 1 && (
-              <div className='flex justify-center items-center mt-8 space-x-2'>
-                <button
-                  className='px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50'
-                  onClick={() => handlePageChange(page - 1)}
-                  disabled={page === 1}
+                <span className='flex items-center'>
+                  {SORT_OPTIONS.find(opt => opt.value === sort)?.icon}
+                  <span className='ml-1'>{SORT_OPTIONS.find(opt => opt.value === sort)?.label}</span>
+                </span>
+                <svg className='w-3 h-3 ml-1 text-gray-400' fill='none' stroke='currentColor' strokeWidth='2' viewBox='0 0 24 24'><path d='M19 9l-7 7-7-7' /></svg>
+              </button>
+              {sortDropdownVisible && (
+                <ul
+                  className={`absolute right-0 z-10 mt-2 w-44 bg-white border border-gray-200 rounded shadow-lg py-1 text-xs origin-top-right transition-all duration-350 ${sortDropdownOpen ? 'animate-fadeScaleIn' : 'animate-fadeScaleOut'}`}
+                  role='listbox'
                 >
-                  Previous
-                </button>
+                  {SORT_OPTIONS.map(opt => (
+                    <li
+                      key={opt.value}
+                      className={`flex items-center px-3 py-2 cursor-pointer transition-all duration-100 rounded ${sort === opt.value ? 'bg-gray-100 font-semibold text-[#003D37]' : 'hover:bg-gray-50 hover:text-[#003D37]'}`}
+                      onClick={() => handleSortSelect(opt.value)}
+                      role='option'
+                      aria-selected={sort === opt.value}
+                    >
+                      <span className={`mr-2 ${sort === opt.value ? 'text-[#003D37]' : 'text-gray-400 group-hover:text-[#003D37]'}`}>{opt.icon}</span>
+                      {opt.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+          <div className='text-xs md:text-sm text-gray-600 mb-2'>
+            {filteredProducts.length} products
+          </div>
+          {lastAddedId && (
+            <div className='fixed top-6 right-6 z-50 bg-[#003D37] text-white px-6 py-3 rounded shadow font-semibold animate-fadeInToast'
+              onAnimationEnd={clearLastAdded}
+            >
+              Added to cart!
+              <style>{`
+                @keyframes fadeInToast {
+                  0% { opacity: 0; transform: translateY(-20px); }
+                  10% { opacity: 1; transform: translateY(0); }
+                  90% { opacity: 1; transform: translateY(0); }
+                  100% { opacity: 0; transform: translateY(-20px); }
+                }
+                .animate-fadeInToast {
+                  animation: fadeInToast 2s ease-in-out;
+                }
+              `}</style>
+            </div>
+          )}
+          {loading && <div className='text-gray-500'>Loading products...</div>}
+          {error && <div className='text-red-500'>{error}</div>}
+          {!loading && !error && <ProductGrid products={filteredProducts} addToCart={product => handleProtectedAddToCart(product, addToCart)} cartItems={cartItems} />}
+          {/* Pagination Controls */}
+          {!loading && !error && totalPages > 1 && (
+            <div className='flex justify-center items-center mt-6 md:mt-8 space-x-2'>
+              <button
+                className='px-3 py-2 md:py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50 text-sm'
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page === 1}
+              >
+                Previous
+              </button>
+              <div className='flex space-x-1'>
                 {[...Array(totalPages)].map((_, i) => (
                   <button
                     key={i}
-                    className={`px-3 py-1 rounded ${page === i + 1 ? 'bg-[#003D37] text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                    className={`px-3 py-2 md:py-1 rounded text-sm ${page === i + 1 ? 'bg-[#003D37] text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
                     onClick={() => handlePageChange(i + 1)}
                   >
                     {i + 1}
                   </button>
                 ))}
-                <button
-                  className='px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50'
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={page === totalPages}
-                >
-                  Next
-                </button>
               </div>
-            )}
-          </div>
+              <button
+                className='px-3 py-2 md:py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50 text-sm'
+                onClick={() => handlePageChange(page + 1)}
+                disabled={page === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </main>
       <Footer />
@@ -273,6 +261,20 @@ function ProductCatalogue () {
         }
         .animate-pageFadeIn {
           animation: pageFadeIn 0.6s cubic-bezier(0.4,0,0.2,1) both;
+        }
+        @keyframes fadeScaleIn {
+          0% { opacity: 0; transform: scale(0.95) translateY(-8px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes fadeScaleOut {
+          0% { opacity: 1; transform: scale(1) translateY(0); }
+          100% { opacity: 0; transform: scale(0.95) translateY(-8px); }
+        }
+        .animate-fadeScaleIn {
+          animation: fadeScaleIn 0.35s cubic-bezier(0.4,0,0.2,1) both;
+        }
+        .animate-fadeScaleOut {
+          animation: fadeScaleOut 0.35s cubic-bezier(0.4,0,0.2,1) both;
         }
       `}</style>
     </div>
