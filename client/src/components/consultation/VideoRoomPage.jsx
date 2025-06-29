@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import API_ENDPOINTS from '../../config/api'
 
 function VideoRoomPage () {
   const { consultationId } = useParams()
@@ -11,7 +12,7 @@ function VideoRoomPage () {
   useEffect(() => {
     setLoading(true)
     setError('')
-    fetch(`/api/consultations/${consultationId}`, {
+    fetch(API_ENDPOINTS.CONSULTATION_DETAILS(consultationId), {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
