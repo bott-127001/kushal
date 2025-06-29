@@ -1867,7 +1867,7 @@ app.post('/api/payment/phonepe/status', authenticateJWT, async (req, res) => {
 })
 
 // Serve React build static files
-app.use(express.static(path.join(__dirname, '../client')))
+app.use(express.static(path.join(__dirname, '../client/build')))
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, '../client/public/uploads')))
