@@ -1,10 +1,11 @@
 import React from 'react'
+import styles from './ProfilePage.module.styl'
 
 function InfoField ({ label, value }) {
   return (
     <div>
-      <h3 className='text-sm font-medium text-gray-500'>{label}</h3>
-      <p className='mt-1 text-sm text-gray-900'>{value || '-'}</p>
+      <h3 className={styles.profileLabel}>{label}</h3>
+      <p className={styles.profileValue}>{value || '-'}</p>
     </div>
   )
 }
@@ -30,8 +31,8 @@ function PersonalInformation ({ user }) {
   }
 
   return (
-    <div className='bg-white p-6 rounded-lg shadow-sm'>
-      <h2 className='text-lg font-semibold text-gray-900 mb-4'>Personal Information</h2>
+    <div>
+      <h2 className={styles.profileTitle + ' mb-4'}>Personal Information</h2>
       <div className='grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-4'>
         <InfoField label='Full Name' value={userInfo.fullName} />
         <InfoField label='Email' value={userInfo.email} />
