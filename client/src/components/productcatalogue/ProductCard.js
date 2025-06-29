@@ -1,9 +1,15 @@
 import React from 'react'
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://kushal-15gt.onrender.com'
+
 function ProductCard ({ product, navigate }) {
   function handleClick () {
     const id = product.id || product._id
     if (navigate) navigate(`/products/${id}`)
+  }
+
+  function handleImageError (e) {
+    e.target.src = '/logo-removebg-preview.png' // Fallback to logo
   }
 
   return (
@@ -25,7 +31,12 @@ function ProductCard ({ product, navigate }) {
           </div>
         </div>
       )}
-      <img src={product.image} alt={product.title} className='w-28 h-28 object-cover rounded-xl mb-4 shadow-sm group-hover:scale-105 transition-transform duration-300' />
+      <img 
+        src={product.image?.startsWith('/uploads/') ? backendUrl + product.image : product.image || '/logo-removebg-preview.png'} 
+        alt={product.title} 
+        className='w-28 h-28 object-cover rounded-xl mb-4 shadow-sm group-hover:scale-105 transition-transform duration-300'
+        onError={handleImageError}
+      />
       <div className='font-bold text-xl text-center text-[#003D37] mb-1'>{product.title}</div>
       <div className='text-gray-600 text-base text-center mb-4'>{product.description}</div>
       <div className='flex items-center gap-2 justify-center mt-auto'>
