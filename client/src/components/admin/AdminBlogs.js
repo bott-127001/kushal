@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import API_ENDPOINTS from '../../config/api'
 
 function AdminBlogs () {
   const [blogs, setBlogs] = useState([])
@@ -27,7 +28,7 @@ function AdminBlogs () {
   function fetchBlogs () {
     setLoading(true)
     setError(null)
-    fetch('/api/blogs')
+    fetch(API_ENDPOINTS.ADMIN_BLOGS)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch blogs')
         return res.json()
@@ -140,7 +141,7 @@ function AdminBlogs () {
       if (!payload.readTime) payload.readTime = '5 min' // fallback default
       if (!payload.summary) payload.summary = form.content.slice(0, 120) + '...'
       if (editId) {
-        res = await fetch(`/api/blogs/${editId}`, {
+        res = await fetch(`${API_ENDPOINTS.ADMIN_BLOGS}/${editId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -149,7 +150,7 @@ function AdminBlogs () {
           body: JSON.stringify(payload)
         })
       } else {
-        res = await fetch('/api/blogs', {
+        res = await fetch(API_ENDPOINTS.ADMIN_BLOGS, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -176,7 +177,7 @@ function AdminBlogs () {
     setDeleteError(null)
     const token = localStorage.getItem('adminToken')
     try {
-      const res = await fetch(`/api/blogs/${deleteId}`, {
+      const res = await fetch(`${API_ENDPOINTS.ADMIN_BLOGS}/${deleteId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
