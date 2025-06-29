@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Footer from '../homepage/Footer'
 import { Link } from 'react-router-dom'
+import API_ENDPOINTS from '../../config/api'
 
 function BlogsCatalogue () {
   const [blogs, setBlogs] = useState([])
@@ -40,7 +41,7 @@ function BlogsCatalogue () {
     params.append('sortBy', sortBy)
     params.append('order', order)
     params.append('page', page)
-    fetch(`/api/blogs?${params.toString()}`)
+    fetch(`${API_ENDPOINTS.BLOGS}?${params.toString()}`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch blogs')
         return res.json()
@@ -58,7 +59,7 @@ function BlogsCatalogue () {
 
   // Fetch unique tags and authors for sidebar
   useEffect(() => {
-    fetch('/api/blogs')
+    fetch(API_ENDPOINTS.BLOGS)
       .then(res => res.json())
       .then(data => {
         const tagsSet = new Set()
