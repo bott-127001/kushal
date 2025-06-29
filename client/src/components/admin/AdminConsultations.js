@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import API_ENDPOINTS from '../../config/api'
 
 function AdminConsultations () {
   const [consultations, setConsultations] = useState([])
@@ -11,7 +12,7 @@ function AdminConsultations () {
     setLoading(true)
     setError(null)
     const token = localStorage.getItem('adminToken')
-    fetch('/api/consultations/all', {
+    fetch(API_ENDPOINTS.ADMIN_CONSULTATIONS, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
