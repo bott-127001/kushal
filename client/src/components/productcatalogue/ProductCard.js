@@ -36,7 +36,7 @@ function ProductCard ({ product, navigate }) {
         </div>
       )}
       <img 
-        src={mainImage?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + mainImage : mainImage || '/logo-removebg-preview.png'} 
+        src={mainImage || '/logo-removebg-preview.png'} 
         alt={product.title} 
         className='w-12 h-12 md:w-24 md:h-24 object-cover rounded mb-1 md:mb-2 shadow-sm group-hover:scale-105 transition-transform duration-300'
         onError={handleImageError}
