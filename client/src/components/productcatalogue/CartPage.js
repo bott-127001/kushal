@@ -1,143 +1,181 @@
-import React, { useEffect, useState } from 'react'
-import Footer from '../homepage/Footer'
-import useCart from '../../store/cart'
-import ProductCard from './ProductCard'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
 import useAuth from '../../store/auth'
+import PropTypes from 'prop-types'
+import API_ENDPOINTS from '../../config/api'
 
-function CartPage () {
-  const { items, updateQuantity, removeFromCart, addToCart, lastAddedId, clearLastAdded } = useCart()
-  const { isAuthenticated } = useAuth()
-  const subtotal = items.reduce((sum, item) => sum + Number(String(item.price).replace(/[^0-9.]/g, '')) * item.quantity, 0)
-  const [recommendations, setRecommendations] = useState([])
-  const navigate = useNavigate()
+const allSlots = [
+  '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM',
+  '06:00 PM', '07:00 PM', '08:00 PM'
+]
 
-  // Redirect if not authenticated
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login')
-    }
-  }, [isAuthenticated, navigate])
+function ConsultationBookingForm ({ selectedPackage }) {
+  const { token } = useAuth()
+  const [form, setForm] = useState({
+    dob: '',
+    tob: '',
+    pob: '',
+    package: '',
+    date: '',
+    slot: '',
+    questions: ''
+  })
+  const [availableSlots, setAvailableSlots] = useState(allSlots)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
+  const [isConsultationBlocked, setIsConsultationBlocked] = useState(false)
+  const [blockMsg, setBlockMsg] = useState('')
 
   useEffect(() => {
-    const exclude = items.map(item => item.id).join(',')
-    fetch(`/api/products/recommendations?exclude=${exclude}`)
+    fetch(API_ENDPOINTS.SETTINGS)
       .then(res => res.json())
-      .then(setRecommendations)
-      .catch(() => setRecommendations([]))
-  }, [items])
+      .then(data => {
+        setIsConsultationBlocked(!!data.isConsultationBlocked)
+        setBlockMsg(data.isConsultationBlocked ? 'Consultations are temporarily unavailable. Please try again later.' : '')
+      })
+      .catch(() => setIsConsultationBlocked(false))
+  }, [])
+
+  useEffect(() => {
+    setForm(f => ({
+      ...f,
+      package: selectedPackage ? `${selectedPackage.type === 'audio' ? 'Audio Call' : 'Video Call'} - ${selectedPackage.mins} Minutes` : ''
+    }))
+  }, [selectedPackage])
+
+  useEffect(() => {
+    if (!form.date) return setAvailableSlots(allSlots)
+    setAvailableSlots([])
+    fetch(`${API_ENDPOINTS.CONSULTATION_SLOTS}?date=${form.date}`)
+      .then(res => res.json())
+      .then(data => {
+        let slots = data.availableSlots || allSlots
+        // If selected date is today, filter out past slots
+        const today = new Date()
+        const selectedDate = new Date(form.date)
+        if (
+          today.getFullYear() === selectedDate.getFullYear() &&
+          today.getMonth() === selectedDate.getMonth() &&
+          today.getDate() === selectedDate.getDate()
+        ) {
+          const now = today
+          slots = slots.filter(slot => {
+            // Parse slot time (e.g., '04:00 PM')
+            const [time, modifier] = slot.split(' ')
+            let [hours, minutes] = time.split(':').map(Number)
+            if (modifier === 'PM' && hours !== 12) hours += 12
+            if (modifier === 'AM' && hours === 12) hours = 0
+            const slotDate = new Date(selectedDate)
+            slotDate.setHours(hours, minutes, 0, 0)
+            return slotDate > now
+          })
+        }
+        setAvailableSlots(slots)
+      })
+      .catch(() => setAvailableSlots(allSlots))
+  }, [form.date])
+
+  function handleChange (e) {
+    const { name, value } = e.target
+    setForm(f => ({ ...f, [name]: value }))
+  }
+
+  async function handleSubmit (e) {
+    e.preventDefault()
+    setError('')
+    setSuccess(false)
+    if (!form.dob || !form.tob || !form.pob || !form.package || !form.date || !form.slot) {
+      setError('Please fill in all required fields.')
+      return
+    }
+    setLoading(true)
+    try {
+      if (isConsultationBlocked) {
+        setError('Consultations are temporarily unavailable. Please try again later.')
+        setLoading(false)
+        return
+      }
+      const res = await fetch(API_ENDPOINTS.CONSULTATIONS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(form)
+      })
+      let errorData = null
+      if (!res.ok) {
+        try {
+          errorData = await res.json()
+        } catch (e) {}
+        setError((errorData && errorData.error) || 'Booking failed. Please try another slot.')
+        setLoading(false)
+        return
+      }
+      setSuccess(true)
+      setForm({ dob: '', tob: '', pob: '', package: '', date: '', slot: '', questions: '' })
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <div className='bg-[#faf9fb] min-h-screen flex flex-col'>
-      <main className='flex-grow max-w-6xl mx-auto w-full px-4 py-6 md:py-10'>
-        <h1 className='text-xl md:text-2xl lg:text-3xl font-serif font-bold mb-6 md:mb-8'>Shopping Cart ({items.length} items)</h1>
-        
-        <div className='flex flex-col lg:flex-row gap-6 md:gap-8'>
-          {/* Cart Items */}
-          <div className='flex-1 space-y-4 md:space-y-6'>
-            {items.length === 0 && (
-              <div className='text-gray-500 text-center py-8 md:py-12'>
-                <div className='text-lg md:text-xl mb-4'>Your cart is empty.</div>
-                <button 
-                  onClick={() => navigate('/products')}
-                  className='px-6 py-3 bg-[#003D37] text-white rounded hover:bg-[#002824] transition'
-                >
-                  Continue Shopping
-                </button>
-              </div>
-            )}
-            {items.map(item => (
-              <div key={item.productId} className='bg-white rounded-xl shadow flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 md:p-6'>
-                <div className='flex flex-col gap-2 flex-1 w-full sm:w-auto'>
-                  <div className='font-serif font-semibold text-base md:text-lg'>{item.title}</div>
-                  {item.subtitle && <div className='text-gray-500 text-sm'>{item.subtitle}</div>}
-                  <div className='flex items-center justify-between sm:justify-start mt-3 gap-4'>
-                    <div className='flex items-center gap-2'>
-                      <button className='w-8 h-8 md:w-7 md:h-7 rounded-full border border-gray-300 flex items-center justify-center text-lg text-gray-600 hover:bg-gray-100 transition'
-                        onClick={() => updateQuantity(item.productId, item.quantity - 1)} disabled={item.quantity === 1}>-</button>
-                      <span className='px-2 min-w-[2rem] text-center'>{item.quantity}</span>
-                      <button className='w-8 h-8 md:w-7 md:h-7 rounded-full border border-gray-300 flex items-center justify-center text-lg text-gray-600 hover:bg-gray-100 transition'
-                        onClick={() => updateQuantity(item.productId, item.quantity + 1)}>+</button>
-                    </div>
-                    <div className='font-serif font-bold text-lg'>
-                      ${Number(String(item.price).replace(/[^0-9.]/g, '')).toFixed(2)}
-                    </div>
-                  </div>
-                </div>
-                <div className='flex items-center justify-end mt-4 sm:mt-0 w-full sm:w-auto'>
-                  <button className='text-red-400 hover:text-red-600 transition' onClick={() => removeFromCart(item.productId)}>
-                    <svg width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' viewBox='0 0 24 24'><path d='M6 6L18 18M6 18L18 6'/></svg>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {/* Order Summary */}
-          <div className='w-full lg:w-80 bg-white rounded-xl shadow p-4 md:p-6 h-fit'>
-            <h2 className='font-serif font-bold text-lg mb-4 md:mb-6'>Order Summary</h2>
-            <div className='flex justify-between mb-2 text-sm'>
-              <span>Subtotal</span>
-              <span className='font-semibold'>${Number(subtotal).toFixed(2)}</span>
-            </div>
-            <div className='flex justify-between mb-2 text-sm'>
-              <span>Shipping</span>
-              <span className='text-gray-500'>Calculated at checkout</span>
-            </div>
-            <div className='flex justify-between mb-4 text-sm'>
-              <span>Estimated Tax</span>
-              <span className='text-gray-500'>Calculated at checkout</span>
-            </div>
-            <div className='flex justify-between mb-6 text-base font-bold'>
-              <span>Total</span>
-              <span>${Number(subtotal).toFixed(2)}</span>
-            </div>
-            <button
-              className='w-full py-3 bg-[#2d223c] text-white font-serif rounded transition hover:brightness-110 mb-4 text-sm md:text-base'
-              onClick={() => navigate('/checkout')}
-              disabled={items.length === 0}
-            >
-              Proceed to Checkout
-            </button>
-          </div>
+    <section className='w-full flex justify-center py-12 bg-[#f6f8fa]'>
+      <form className='bg-white border border-[#003D37] rounded-xl shadow p-8 max-w-md w-full flex flex-col gap-4' onSubmit={handleSubmit} autoComplete='off'>
+        <h3 className='text-xl font-serif font-bold text-center mb-4 text-black'>Book Your Consultation</h3>
+        {isConsultationBlocked && (
+          <div className='text-red-500 text-center font-semibold mb-4'>{blockMsg}</div>
+        )}
+        <div className='flex flex-col gap-2'>
+          <label className='font-semibold text-left mb-1' htmlFor='dob'>Date of Birth</label>
+          <input id='dob' type='date' name='dob' placeholder='Birth Date' className='border border-gray-300 rounded px-3 py-2' value={form.dob} onChange={handleChange} required disabled={isConsultationBlocked} />
         </div>
-        
-        {/* You May Also Like */}
-        {recommendations.length > 0 && (
-          <div className='mt-12 md:mt-16'>
-            <h2 className='font-serif font-bold text-lg mb-6'>You May Also Like</h2>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
-              {recommendations.map(product => (
-                <div key={product._id} className='cursor-pointer' onClick={() => navigate(`/products/${product._id}`)}>
-                  <ProductCard product={product} addToCart={addToCart} isInCart={!!items.find(item => item.id === (product.id || product._id))} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {lastAddedId && (
-          <div className='fixed top-6 right-6 z-50 bg-[#D4AF37] text-white px-4 md:px-6 py-3 rounded shadow font-semibold animate-fadeInToast text-sm'
-            onAnimationEnd={clearLastAdded}
-          >
-            Added to cart!
-            <style>{`
-              @keyframes fadeInToast {
-                0% { opacity: 0; transform: translateY(-20px); }
-                10% { opacity: 1; transform: translateY(0); }
-                90% { opacity: 1; transform: translateY(0); }
-                100% { opacity: 0; transform: translateY(-20px); }
-              }
-              .animate-fadeInToast {
-                animation: fadeInToast 2s ease-in-out;
-              }
-            `}</style>
-          </div>
-        )}
-      </main>
-      <Footer />
-    </div>
+        <div className='flex flex-col gap-2'>
+          <label className='font-semibold text-left mb-1' htmlFor='tob'>Time of Birth</label>
+          <input id='tob' type='time' name='tob' placeholder='Time of Birth' className='border border-gray-300 rounded px-3 py-2' value={form.tob} onChange={handleChange} required disabled={isConsultationBlocked} />
+        </div>
+        <div className='flex flex-col gap-2'>
+          <label className='font-semibold text-left mb-1' htmlFor='pob'>Place of Birth</label>
+          <input id='pob' type='text' name='pob' placeholder='Place of Birth' className='border border-gray-300 rounded px-3 py-2' value={form.pob} onChange={handleChange} required disabled={isConsultationBlocked} />
+        </div>
+        <div className='flex flex-col gap-2'>
+          <label className='font-semibold text-left mb-1' htmlFor='package'>Consultation Package</label>
+          <select id='package' name='package' className='border border-gray-300 rounded px-3 py-2' value={form.package} onChange={handleChange} required disabled={isConsultationBlocked}>
+            <option value=''>Choose your package</option>
+            <option value='Audio Call - 10 Minutes'>Audio Call - 10 Minutes</option>
+            <option value='Audio Call - 15 Minutes'>Audio Call - 15 Minutes</option>
+            <option value='Audio Call - 30 Minutes'>Audio Call - 30 Minutes</option>
+            <option value='Video Call - 10 Minutes'>Video Call - 10 Minutes</option>
+            <option value='Video Call - 15 Minutes'>Video Call - 15 Minutes</option>
+            <option value='Video Call - 30 Minutes'>Video Call - 30 Minutes</option>
+            <option value='06:00 PM'>06:00 PM</option>
+            <option value='07:00 PM'>07:00 PM</option>
+            <option value='08:00 PM'>08:00 PM</option>
+          </select>
+        </div>
+        <div className='flex flex-col gap-2'>
+          <label className='font-semibold text-left mb-1' htmlFor='date'>Consultation Date (Time Slot Date)</label>
+          <input id='date' type='date' name='date' placeholder='Time Slot Date' className='border border-gray-300 rounded px-3 py-2' value={form.date} onChange={handleChange} required disabled={isConsultationBlocked} />
+        </div>
+        <div className='flex flex-col gap-2'>
+          <label className='font-semibold text-left mb-1' htmlFor='slot'>Time Slot</label>
+          <select id='slot' name='slot' className='border border-gray-300 rounded px-3 py-2' value={form.slot} onChange={handleChange} required disabled={isConsultationBlocked}>
+            <option value=''>Select time slot</option>
+            {availableSlots.map(slot => (
+              <option key={slot} value={slot} disabled={availableSlots.length === 0}>{slot}</option>
+            ))}
+          </select>
+        </div>
+        <textarea name='questions' placeholder='Please describe your questions or concerns...' className='border border-gray-300 rounded px-3 py-2 min-h-[60px]' value={form.questions} onChange={handleChange} disabled={isConsultationBlocked} />
+        {error && <div className='text-red-500'>{error}</div>}
+        {success && <div className='text-green-600'>Booking successful! You will receive a confirmation email.</div>}
+        <button type='submit' className='w-full py-3 bg-[#003D37] text-white font-serif rounded transition hover:brightness-110 mt-2' disabled={loading || isConsultationBlocked}>{loading ? 'Booking...' : 'Book Consultation'}</button>
+      </form>
+    </section>
   )
 }
 
-export default CartPage 
+ConsultationBookingForm.propTypes = {
+  selectedPackage: PropTypes.object
+}
+
+export default ConsultationBookingForm 
