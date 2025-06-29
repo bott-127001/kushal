@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import API_ENDPOINTS from '../../config/api'
 
 function AdminUsers () {
   const [users, setUsers] = useState([])
@@ -16,7 +17,7 @@ function AdminUsers () {
     setLoading(true)
     setError(null)
     const token = localStorage.getItem('adminToken')
-    fetch('/api/users', {
+    fetch(API_ENDPOINTS.ADMIN_USERS, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -54,7 +55,7 @@ function AdminUsers () {
     const token = localStorage.getItem('adminToken')
     try {
       const endpoint = user.isBlocked ? 'unblock' : 'block'
-      const res = await fetch(`/api/users/${user._id}/${endpoint}`, {
+      const res = await fetch(`${API_ENDPOINTS.ADMIN_USERS}/${user._id}/${endpoint}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -76,7 +77,7 @@ function AdminUsers () {
     setDeleteError(null)
     const token = localStorage.getItem('adminToken')
     try {
-      const res = await fetch(`/api/users/${deleteId}`, {
+      const res = await fetch(`${API_ENDPOINTS.ADMIN_USERS}/${deleteId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
