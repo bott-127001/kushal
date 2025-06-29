@@ -32,7 +32,7 @@ function ProductDetails () {
   useEffect(() => {
     setLoading(true)
     setError(null)
-    fetch(`/api/products/${id}`)
+    fetch(API_ENDPOINTS.PRODUCT_DETAILS(id))
       .then(res => {
         if (!res.ok) throw new Error('Product not found')
         return res.json()
@@ -48,7 +48,7 @@ function ProductDetails () {
   }, [id])
 
   useEffect(() => {
-    fetch(`/api/products/recommendations?exclude=${id}`)
+    fetch(`${API_ENDPOINTS.PRODUCTS}/recommendations?exclude=${id}`)
       .then(res => res.json())
       .then(setRecommendations)
       .catch(() => setRecommendations([]))
@@ -57,7 +57,7 @@ function ProductDetails () {
   useEffect(() => {
     setReviewsLoading(true)
     setReviewsError(null)
-    fetch(`/api/products/${id}/reviews`)
+    fetch(API_ENDPOINTS.PRODUCT_REVIEWS(id))
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch reviews')
         return res.json()
@@ -232,19 +232,22 @@ function ProductDetails () {
                   setSubmitting(true)
                   setSubmitError(null)
                   try {
-                    const res = await fetch(`/api/products/${id}/reviews`, {
+                    const res = await fetch(API_ENDPOINTS.PRODUCT_REVIEWS(id), {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                       },
                       body: JSON.stringify({
-                        user: user?.email,
+                        user: user?.email || user?.name || 'Anonymous',
                         rating: reviewForm.rating,
                         comment: reviewForm.comment
                       })
                     })
-                    if (!res.ok) throw new Error('Failed to submit review')
+                    if (!res.ok) {
+                      const errorData = await res.json()
+                      throw new Error(errorData.error || 'Failed to submit review')
+                    }
                     const data = await res.json()
                     setReviews(data)
                     setReviewForm({ user: '', rating: 5, comment: '' })
