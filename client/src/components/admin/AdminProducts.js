@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://kushal-15gt.onrender.com'
+
 function AdminProducts () {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState({
-    image: '', title: '', price: '', originalPrice: '', category: '', material: '', style: '', description: ''
+    image: '', title: '', shortDescription: '', price: '', originalPrice: '', category: '', material: '', style: '', description: '', specs: ''
   })
   const [formLoading, setFormLoading] = useState(false)
   const [formError, setFormError] = useState(null)
@@ -46,7 +48,7 @@ function AdminProducts () {
   }
 
   function openAddModal () {
-    setForm({ image: '', title: '', price: '', originalPrice: '', category: '', material: '', style: '', description: '' })
+    setForm({ image: '', title: '', shortDescription: '', price: '', originalPrice: '', category: '', material: '', style: '', description: '', specs: '' })
     setEditId(null)
     setShowModal(true)
   }
@@ -55,12 +57,14 @@ function AdminProducts () {
     setForm({
       image: product.image || '',
       title: product.title || '',
+      shortDescription: product.shortDescription || product.description || '',
       price: product.price || '',
       originalPrice: product.originalPrice || '',
       category: product.category || '',
       material: product.material || '',
       style: product.style || '',
-      description: product.description || ''
+      description: product.description || '',
+      specs: (product.specs || []).join('\n')
     })
     setEditId(product._id)
     setShowModal(true)
@@ -75,6 +79,7 @@ function AdminProducts () {
     setUploading(false)
     setImagePreviews(data.urls)
     setForm(f => ({ ...f, image: data.urls[0] || '' }))
+    console.log('Uploaded image URL:', data.urls[0])
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: { 'image/*': [] }, multiple: true })
@@ -83,7 +88,19 @@ function AdminProducts () {
     e.preventDefault()
     setFormError(null)
     setFormLoading(true)
+    if (!form.image) {
+      setFormError('Please upload a product image.')
+      setFormLoading(false)
+      return
+    }
     const token = localStorage.getItem('adminToken')
+    // Prepare product data
+    const productData = {
+      ...form,
+      description: form.shortDescription,
+      specs: form.specs
+    }
+    delete productData.shortDescription
     try {
       let res, data
       if (editId) {
@@ -93,7 +110,7 @@ function AdminProducts () {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(form)
+          body: JSON.stringify(productData)
         })
       } else {
         res = await fetch('/api/products', {
@@ -102,14 +119,14 @@ function AdminProducts () {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(form)
+          body: JSON.stringify(productData)
         })
       }
       data = await res.json()
       if (!res.ok) throw new Error(data.error || (editId ? 'Failed to update product' : 'Failed to add product'))
       setShowModal(false)
       setEditId(null)
-      setForm({ image: '', title: '', price: '', originalPrice: '', category: '', material: '', style: '', description: '' })
+      setForm({ image: '', title: '', shortDescription: '', price: '', originalPrice: '', category: '', material: '', style: '', description: '', specs: '' })
       fetchProducts()
     } catch (err) {
       setFormError(err.message)
@@ -165,7 +182,12 @@ function AdminProducts () {
               {products.map(product => (
                 <tr key={product._id} className='border-t border-[#FFD700]'>
                   <td className='py-2 px-4'>
-                    <img src={product.image} alt={product.title} className='w-16 h-16 object-cover rounded' />
+                    <img 
+                      src={product.image?.startsWith('/uploads/') ? backendUrl + product.image : product.image || '/logo-removebg-preview.png'} 
+                      alt={product.title} 
+                      className='w-16 h-16 object-cover rounded'
+                      onError={(e) => { e.target.src = '/logo-removebg-preview.png' }}
+                    />
                   </td>
                   <td className='py-2 px-4'>{product.title}</td>
                   <td className='py-2 px-4'>{product.price}</td>
@@ -193,15 +215,16 @@ function AdminProducts () {
               {isDragActive ? <p>Drop the images here ...</p> : <p>Drag & drop images here, or click to select files</p>}
               <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
                 {imagePreviews.map(url => (
-                  <img key={url} src={url} alt='preview' style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }} />
+                  <img key={url} src={url?.startsWith('/uploads/') ? backendUrl + url : url} alt='preview' style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }} />
                 ))}
                 {form.image && !imagePreviews.length && (
-                  <img src={form.image} alt='preview' style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }} />
+                  <img src={form.image?.startsWith('/uploads/') ? backendUrl + form.image : form.image} alt='preview' style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, border: '1px solid #eee' }} />
                 )}
               </div>
               {uploading && <div style={{ marginTop: 8 }}>Uploading...</div>}
             </div>
             <input type='text' name='title' placeholder='Title' className='border border-gray-300 rounded px-3 py-2' value={form.title} onChange={handleFormChange} required />
+            <textarea name='shortDescription' placeholder='Short Description (3-4 lines)' className='border border-gray-300 rounded px-3 py-2' value={form.shortDescription} onChange={handleFormChange} maxLength={250} rows={3} required />
             <div className='flex gap-2'>
               <input type='number' min='0' step='0.01' name='originalPrice' placeholder='Original Price' className='border border-gray-300 rounded px-3 py-2 flex-1' value={form.originalPrice} onChange={handleFormChange} />
               <input type='number' min='0' step='0.01' name='price' placeholder='Discounted Price' className='border border-gray-300 rounded px-3 py-2 flex-1' value={form.price} onChange={handleFormChange} required />
@@ -210,6 +233,7 @@ function AdminProducts () {
             <input type='text' name='material' placeholder='Material' className='border border-gray-300 rounded px-3 py-2' value={form.material} onChange={handleFormChange} />
             <input type='text' name='style' placeholder='Style' className='border border-gray-300 rounded px-3 py-2' value={form.style} onChange={handleFormChange} />
             <textarea name='description' placeholder='Description' className='border border-gray-300 rounded px-3 py-2' value={form.description} onChange={handleFormChange} />
+            <textarea name='specs' placeholder='Specifications (one per line)' className='border border-gray-300 rounded px-3 py-2' value={form.specs} onChange={handleFormChange} rows={4} />
             {formError && <div className='text-red-500 text-center'>{formError}</div>}
             <button type='submit' className='w-full py-3 bg-[#FFD700] text-white font-serif rounded transition hover:brightness-110 mt-2 font-bold' disabled={formLoading}>
               {formLoading ? (editId ? 'Saving...' : 'Adding...') : (editId ? 'Save Changes' : 'Add Product')}
