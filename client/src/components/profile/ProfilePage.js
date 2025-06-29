@@ -157,27 +157,27 @@ function ProfilePage () {
   }
 
   return (
-    <div className={styles.profilePageContainer + ' min-h-screen'}>
-      <main className='max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8'>
+    <div className={styles.profilePageContainer + ' min-h-screen flex flex-col'}>
+      <main className='flex-1 max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8'>
         <div className='space-y-10'>
           <div className={styles.profileSection}>
-            <ProfileHeader user={user} onEditClick={() => setIsEditModalOpen(true)} />
+          <ProfileHeader user={user} onEditClick={() => setIsEditModalOpen(true)} />
           </div>
           <div className={styles.profileSection}>
-            <PersonalInformation user={user} />
+          <PersonalInformation user={user} />
           </div>
           <div className={styles.profileSection}>
-            <OrderHistory />
+          <OrderHistory />
           </div>
           <div className={styles.profileSection}>
-            <ConsultationHistory />
+          <ConsultationHistory />
           </div>
           <div className={styles.profileSection}>
-            <AccountSettings
-              onChangePasswordClick={() => setIsChangePasswordModalOpen(true)}
-              onNotificationClick={() => setIsNotificationModalOpen(true)}
-              onDeleteAccountClick={() => setIsDeleteModalOpen(true)}
-            />
+          <AccountSettings
+            onChangePasswordClick={() => setIsChangePasswordModalOpen(true)}
+            onNotificationClick={() => setIsNotificationModalOpen(true)}
+            onDeleteAccountClick={() => setIsDeleteModalOpen(true)}
+          />
           </div>
         </div>
       </main>
