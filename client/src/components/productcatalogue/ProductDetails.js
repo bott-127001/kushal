@@ -3,8 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Footer from '../homepage/Footer'
 import useCart from '../../store/cart'
 import useAuth from '../../store/auth'
-
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'
+import API_ENDPOINTS from '../../config/api'
 
 function SkeletonBox ({ className }) {
   return <div className={`bg-gray-200 animate-pulse rounded ${className}`} />
@@ -126,7 +125,7 @@ function ProductDetails () {
         {/* Left: Product Image + Carousel */}
         <div className='flex-1 flex flex-col items-center justify-center'>
           <img 
-            src={mainImage?.startsWith('/uploads/') ? backendUrl + mainImage : mainImage} 
+            src={mainImage?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + mainImage : mainImage} 
             alt={product.title} 
             className='w-full max-w-xs rounded-xl shadow-lg object-cover mb-4'
             onError={(e) => { e.target.src = '/logo-removebg-preview.png' }}
@@ -136,7 +135,7 @@ function ProductDetails () {
             {images.map((img, idx) => (
               <img
                 key={img + idx}
-                src={img?.startsWith('/uploads/') ? backendUrl + img : img || '/logo-removebg-preview.png'}
+                src={img?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + img : img || '/logo-removebg-preview.png'}
                 alt={`thumb-${idx}`}
                 className={`w-16 h-16 object-cover rounded border-2 cursor-pointer ${selectedImageIdx === idx ? 'border-[#003D37]' : 'border-gray-200'}`}
                 onClick={() => setSelectedImageIdx(idx)}
@@ -318,7 +317,7 @@ function ProductDetails () {
           <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
             {recommendations.map((item) => (
               <div key={item._id} className='bg-white rounded-xl shadow p-6 flex flex-col justify-end min-h-[160px] cursor-pointer' onClick={() => navigate(`/products/${item._id}`)}>
-                <img src={item.image?.startsWith('/uploads/') ? backendUrl + item.image : item.image || '/logo-removebg-preview.png'} alt={item.title} className='w-full h-32 object-cover rounded mb-3' onError={e => { e.target.src = '/logo-removebg-preview.png' }} />
+                <img src={item.image?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + item.image : item.image || '/logo-removebg-preview.png'} alt={item.title} className='w-full h-32 object-cover rounded mb-3' onError={e => { e.target.src = '/logo-removebg-preview.png' }} />
                 <div className='font-serif font-semibold text-base mb-2'>{item.title}</div>
                 <div className='text-[#2d223c] font-serif font-bold text-base'>{item.price}</div>
               </div>
