@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import useAuth from '../../store/auth'
+import API_ENDPOINTS from '../../config/api'
 
 function StatusBadge ({ status }) {
   const baseClasses = 'px-2.5 py-0.5 text-xs font-medium rounded-full'
@@ -22,7 +23,7 @@ function OrderHistory () {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch('/api/my-orders', {
+        const response = await fetch(API_ENDPOINTS.MY_ORDERS, {
           headers: {
             Authorization: `Bearer ${token}`
           }
