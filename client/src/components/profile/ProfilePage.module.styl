@@ -1,0 +1,44 @@
+// Grey green palette
+$greyGreenBg = #e6f4ea
+$greyGreenBorder = #b7d3c6
+$greyGreenText = #3a5a40
+$greyGreenAccent = #95bfa3
+$deepGreen = #003D37
+
+profilePageContainer
+  background $greyGreenBg
+
+profileSection
+  border 1px solid $greyGreenBorder
+  background $greyGreenBg
+  border-radius 0.5rem
+  box-shadow 0 1px 2px rgba(0,0,0,0.03)
+  padding 1.5rem
+
+profileTitle
+  color $greyGreenText
+  font-weight 600
+
+profileLabel
+  color $greyGreenAccent
+  font-size 0.95rem
+
+profileValue
+  color $greyGreenText
+  font-size 1.05rem
+  font-weight 500
+
+profileButton
+  background $deepGreen
+  color white
+  font-weight 600
+  border none
+  border-radius 0.5rem
+  padding 0.5rem 1rem
+  transition background 0.2s
+  cursor pointer
+  &:hover
+    background darken($deepGreen, 10%)
+  &:disabled
+    opacity 0.6
+    cursor not-allowed 
