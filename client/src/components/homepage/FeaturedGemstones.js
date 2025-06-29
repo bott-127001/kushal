@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useAuth from '../../store/auth'
 import useCart from '../../store/cart'
 import AuthPromptModal from './AuthPromptModal'
-
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'
+import API_ENDPOINTS from '../../config/api'
 
 function FeaturedGemstones () {
   const [gemstones, setGemstones] = useState([])
@@ -57,7 +56,7 @@ function FeaturedGemstones () {
 
   function getImageSrc (gem) {
     if (!gem.image) return '/logo-removebg-preview.png'
-    if (gem.image.startsWith('/uploads/')) return backendUrl + gem.image
+    if (gem.image.startsWith('/uploads/')) return API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + gem.image
     return gem.image
   }
 
