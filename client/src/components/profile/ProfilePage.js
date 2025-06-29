@@ -11,6 +11,7 @@ import NotificationPreferencesModal from './NotificationPreferencesModal'
 import DeleteAccountModal from './DeleteAccountModal'
 import useAuth from '../../store/auth'
 import { useNavigate } from 'react-router-dom'
+import styles from './ProfilePage.module.styl'
 
 function ProfilePage () {
   const [user, setUser] = useState(null)
@@ -156,18 +157,28 @@ function ProfilePage () {
   }
 
   return (
-    <div className='bg-[#f9fafb] min-h-screen'>
+    <div className={styles.profilePageContainer + ' min-h-screen'}>
       <main className='max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8'>
         <div className='space-y-10'>
-          <ProfileHeader user={user} onEditClick={() => setIsEditModalOpen(true)} />
-          <PersonalInformation user={user} />
-          <OrderHistory />
-          <ConsultationHistory />
-          <AccountSettings
-            onChangePasswordClick={() => setIsChangePasswordModalOpen(true)}
-            onNotificationClick={() => setIsNotificationModalOpen(true)}
-            onDeleteAccountClick={() => setIsDeleteModalOpen(true)}
-          />
+          <div className={styles.profileSection}>
+            <ProfileHeader user={user} onEditClick={() => setIsEditModalOpen(true)} />
+          </div>
+          <div className={styles.profileSection}>
+            <PersonalInformation user={user} />
+          </div>
+          <div className={styles.profileSection}>
+            <OrderHistory />
+          </div>
+          <div className={styles.profileSection}>
+            <ConsultationHistory />
+          </div>
+          <div className={styles.profileSection}>
+            <AccountSettings
+              onChangePasswordClick={() => setIsChangePasswordModalOpen(true)}
+              onNotificationClick={() => setIsNotificationModalOpen(true)}
+              onDeleteAccountClick={() => setIsDeleteModalOpen(true)}
+            />
+          </div>
         </div>
       </main>
       <Footer />
