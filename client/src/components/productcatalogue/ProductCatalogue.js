@@ -45,6 +45,7 @@ function ProductCatalogue () {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const { isAuthenticated } = useAuth()
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     setLoading(true)
@@ -89,6 +90,11 @@ function ProductCatalogue () {
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
+      // Search filter
+      if (search && !(
+        product.title?.toLowerCase().includes(search.toLowerCase()) ||
+        product.description?.toLowerCase().includes(search.toLowerCase())
+      )) return false
       // Category filter
       if (filters.categories.length && !filters.categories.includes(product.category)) return false
       // Material filter
@@ -109,7 +115,7 @@ function ProductCatalogue () {
       }
       return true
     })
-  }, [filters, products])
+  }, [filters, products, search])
 
   function handleSortSelect (value) {
     setSort(value)
@@ -147,6 +153,11 @@ function ProductCatalogue () {
     window.location.href = '/login'
   }
 
+  function handleSearchSubmit (e) {
+    e.preventDefault()
+    setPage(1)
+  }
+
   return (
     <div className={`min-h-screen flex flex-col transition-all duration-500 ${pageTransition ? 'animate-pageFadeIn' : ''}`}>
       <AuthPromptModal
@@ -158,6 +169,23 @@ function ProductCatalogue () {
       <main className='flex-grow'>
         <CatalogueHero />
         <div className='py-4 md:py-6' />
+        {/* Search Bar */}
+        <div className='max-w-3xl mx-auto text-center mb-4'>
+          <form className='flex justify-center' onSubmit={handleSearchSubmit}>
+            <div className='relative w-full max-w-xl'>
+              <input
+                type='text'
+                placeholder='Search products, gemstones, or categories...'
+                className='w-full py-3 pl-5 pr-12 rounded border border-[#003D37] bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#003D37] transition'
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+              <button type='submit' className='absolute right-3 top-1/2 -translate-y-1/2 text-[#003D37]'>
+                <svg width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' viewBox='0 0 24 24'><circle cx='11' cy='11' r='8'/><path d='M21 21l-4.35-4.35'/></svg>
+              </button>
+            </div>
+          </form>
+        </div>
         <div className='max-w-7xl mx-auto px-1 md:px-4'>
           {/* Layout: column on mobile, row on desktop */}
           <div className='flex flex-col md:flex-row gap-4 md:gap-8'>
@@ -188,7 +216,10 @@ function ProductCatalogue () {
                   </button>
                   {sortDropdownVisible && (
                     <ul
-                      className={`absolute right-0 z-10 mt-2 w-44 bg-white border border-gray-200 rounded shadow-lg py-1 text-xs origin-top-right transition-all duration-350 ${sortDropdownOpen ? 'animate-fadeScaleIn' : 'animate-fadeScaleOut'}`}
+                      className={`absolute z-10 mt-2 w-44 bg-white border border-gray-200 rounded shadow-lg py-1 text-xs origin-top-right transition-all duration-350
+                        ${sortDropdownOpen ? 'animate-fadeScaleIn' : 'animate-fadeScaleOut'}
+                        right-0 md:right-0 left-0 md:left-auto max-w-[90vw] md:max-w-xs
+                      `}
                       role='listbox'
                     >
                       {SORT_OPTIONS.map(opt => (
@@ -228,7 +259,9 @@ function ProductCatalogue () {
               )}
               {loading && <div className='text-gray-500'>Loading products...</div>}
               {error && <div className='text-red-500'>{error}</div>}
-              {!loading && !error && <ProductGrid products={filteredProducts} addToCart={product => handleProtectedAddToCart(product, addToCart)} cartItems={cartItems} />}
+              {!loading && !error && <div className='mb-8'>
+                <ProductGrid products={filteredProducts} addToCart={product => handleProtectedAddToCart(product, addToCart)} cartItems={cartItems} />
+              </div>}
               {/* Pagination Controls */}
               {!loading && !error && totalPages > 1 && (
                 <div className='flex justify-center items-center mt-6 md:mt-8 space-x-2'>
