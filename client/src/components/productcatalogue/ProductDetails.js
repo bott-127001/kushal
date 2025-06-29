@@ -125,7 +125,7 @@ function ProductDetails () {
         {/* Left: Product Image + Carousel */}
         <div className='flex-1 flex flex-col items-center justify-center'>
           <img 
-            src={mainImage?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + mainImage : mainImage} 
+            src={mainImage || '/logo-removebg-preview.png'} 
             alt={product.title} 
             className='w-full max-w-xs rounded-xl shadow-lg object-cover mb-4'
             onError={(e) => { e.target.src = '/logo-removebg-preview.png' }}
@@ -135,7 +135,7 @@ function ProductDetails () {
             {images.map((img, idx) => (
               <img
                 key={img + idx}
-                src={img?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + img : img || '/logo-removebg-preview.png'}
+                src={img || '/logo-removebg-preview.png'}
                 alt={`thumb-${idx}`}
                 className={`w-16 h-16 object-cover rounded border-2 cursor-pointer ${selectedImageIdx === idx ? 'border-[#003D37]' : 'border-gray-200'}`}
                 onClick={() => setSelectedImageIdx(idx)}
