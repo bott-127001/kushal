@@ -70,15 +70,14 @@ function AdminProducts () {
   }
 
   const onDrop = useCallback(async (acceptedFiles) => {
-    setUploading(true)
-    const formData = new FormData()
-    acceptedFiles.forEach(file => formData.append('images', file))
-    const res = await fetch('/api/upload', { method: 'POST', body: formData })
-    const data = await res.json()
-    setUploading(false)
-    setImagePreviews(data.urls)
-    setForm(f => ({ ...f, image: data.urls[0] || '' }))
-    console.log('Uploaded image URL:', data.urls[0])
+    if (!acceptedFiles.length) return
+    const file = acceptedFiles[0]
+    const reader = new window.FileReader()
+    reader.onloadend = () => {
+      setForm(f => ({ ...f, image: reader.result }))
+      setImagePreviews([reader.result])
+    }
+    reader.readAsDataURL(file)
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: { 'image/*': [] }, multiple: true })
