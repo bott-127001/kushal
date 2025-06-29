@@ -1,9 +1,4 @@
 import React, { useEffect, useState } from 'react'
-
-function CelestialInsights () {
-  const [insights, setInsights] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
