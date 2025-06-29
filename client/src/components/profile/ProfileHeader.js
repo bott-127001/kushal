@@ -1,4 +1,5 @@
 import React from 'react'
+import styles from './ProfilePage.module.styl'
 
 function ProfileHeader ({ user, onEditClick }) {
   const getMemberSince = () => {
@@ -17,8 +18,8 @@ function ProfileHeader ({ user, onEditClick }) {
           </svg>
         </div>
         <div>
-          <h1 className='text-2xl font-bold text-gray-900'>{user.name || 'User'}</h1>
-          <p className='text-sm text-gray-500'>{getMemberSince()}</p>
+          <h1 className={styles.profileTitle + ' text-2xl'}>{user.name || 'User'}</h1>
+          <p className={styles.profileLabel + ' text-sm'}>{getMemberSince()}</p>
         </div>
       </div>
       <button
