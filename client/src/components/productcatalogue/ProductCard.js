@@ -11,6 +11,11 @@ function ProductCard ({ product, navigate }) {
     e.target.src = '/logo-removebg-preview.png' // Fallback to logo
   }
 
+  // Use first image from images array if available, else fallback to image
+  const mainImage = product.images && product.images.length > 0
+    ? product.images[0]
+    : product.image
+
   return (
     <div
       className='relative w-full h-36 md:h-64 bg-white rounded border-2 border-[#003D37] shadow p-2 md:p-4 flex flex-col items-center justify-start cursor-pointer hover:shadow-md transition-all duration-300 group min-w-0'
@@ -31,7 +36,7 @@ function ProductCard ({ product, navigate }) {
         </div>
       )}
       <img 
-        src={product.image?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + product.image : product.image || '/logo-removebg-preview.png'} 
+        src={mainImage?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + mainImage : mainImage || '/logo-removebg-preview.png'} 
         alt={product.title} 
         className='w-12 h-12 md:w-24 md:h-24 object-cover rounded mb-1 md:mb-2 shadow-sm group-hover:scale-105 transition-transform duration-300'
         onError={handleImageError}
