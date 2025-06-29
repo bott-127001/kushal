@@ -4,6 +4,8 @@ import useAuth from '../../store/auth'
 import useCart from '../../store/cart'
 import AuthPromptModal from './AuthPromptModal'
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'
+
 function FeaturedGemstones () {
   const [gemstones, setGemstones] = useState([])
   const [loading, setLoading] = useState(true)
@@ -53,6 +55,16 @@ function FeaturedGemstones () {
     navigate('/login')
   }
 
+  function getImageSrc (gem) {
+    if (!gem.image) return '/logo-removebg-preview.png'
+    if (gem.image.startsWith('/uploads/')) return backendUrl + gem.image
+    return gem.image
+  }
+
+  function handleImageError (e) {
+    e.target.src = '/logo-removebg-preview.png'
+  }
+
   return (
     <section className='w-full bg-gray-100 py-1 flex justify-center'>
       <div className='w-[90%] rounded-xl bg-white shadow-lg p-8 flex flex-col items-center border border-gray-300'>
@@ -81,16 +93,31 @@ function FeaturedGemstones () {
         <h2 className='text-2xl md:text-3xl font-serif font-bold text-center mb-10 text-gray-900'>Featured Gemstones</h2>
         {loading && <div className='text-gray-500'>Loading...</div>}
         {error && <div className='text-red-500'>{error}</div>}
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-6xl px-4'>
+        <div className='grid grid-cols-2 gap-3 w-full max-w-6xl px-2'>
           {gemstones.map((gem, i) => (
-            <div key={gem._id || gem.title} className='flex flex-col justify-between bg-gray-50 rounded-xl shadow border border-gray-100 p-8 min-h-[180px]'>
+            <div key={gem._id || gem.title} className='flex flex-col justify-between bg-gray-50 rounded-xl shadow border border-gray-100 p-4 md:p-8 min-h-[120px] md:min-h-[180px]'>
               <div>
-                <div className='font-serif font-bold text-lg mb-1 text-gray-900'>{gem.title}</div>
-                <div className='text-gray-600 text-sm mb-2'>{gem.description}</div>
-                <div className='text-[#003D37] font-serif font-semibold text-base mb-6'>{gem.price}</div>
+                <img
+                  src={getImageSrc(gem)}
+                  alt={gem.title}
+                  className='w-14 h-14 md:w-20 md:h-20 object-cover rounded mb-2 mx-auto'
+                  onError={handleImageError}
+                />
+                <div className='font-serif font-bold text-base md:text-lg mb-1 text-gray-900 text-center'>{gem.title}</div>
+                <div className='text-gray-600 text-xs md:text-sm mb-2 text-center'>{gem.description}</div>
+                <div className='flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 mb-2 md:mb-3 min-h-[1.5em]'>
+                  {gem.originalPrice && Number(gem.originalPrice) > Number(gem.price) && (
+                    <span className='text-gray-400 line-through text-xs md:text-sm text-center'>
+                      ${parseFloat(gem.originalPrice).toFixed(2)}
+                    </span>
+                  )}
+                  <span className='text-[#003D37] font-serif font-bold text-sm md:text-base text-center'>
+                    ${parseFloat(gem.price).toFixed(2)}
+                  </span>
+                </div>
               </div>
               <button
-                className='self-end px-6 py-2 bg-[#003D37] text-white font-serif rounded transition hover:bg-[#002824]'
+                className='self-end px-4 py-1.5 md:px-6 md:py-2 bg-[#003D37] text-white font-serif rounded transition hover:bg-[#002824] text-xs md:text-base'
                 onClick={() => handleAddToCart(gem)}
               >
                 Add to Cart
