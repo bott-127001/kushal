@@ -1,6 +1,5 @@
 import React from 'react'
-
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000'
+import API_ENDPOINTS from '../../config/api'
 
 function ProductCard ({ product, navigate }) {
   function handleClick () {
@@ -32,7 +31,7 @@ function ProductCard ({ product, navigate }) {
         </div>
       )}
       <img 
-        src={product.image?.startsWith('/uploads/') ? backendUrl + product.image : product.image || '/logo-removebg-preview.png'} 
+        src={product.image?.startsWith('/uploads/') ? API_ENDPOINTS.PRODUCTS.replace('/api/products', '') + product.image : product.image || '/logo-removebg-preview.png'} 
         alt={product.title} 
         className='w-12 h-12 md:w-24 md:h-24 object-cover rounded mb-1 md:mb-2 shadow-sm group-hover:scale-105 transition-transform duration-300'
         onError={handleImageError}
