@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import API_ENDPOINTS from '../../config/api'
 
 function AdminOrders () {
   const [orders, setOrders] = useState([])
@@ -18,7 +19,7 @@ function AdminOrders () {
     setLoading(true)
     setError(null)
     const token = localStorage.getItem('adminToken')
-    fetch('/api/orders', {
+    fetch(API_ENDPOINTS.ADMIN_ORDERS, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -57,7 +58,7 @@ function AdminOrders () {
     setStatusLoading(true)
     const token = localStorage.getItem('adminToken')
     try {
-      const res = await fetch(`/api/orders/${statusOrderId}/status`, {
+      const res = await fetch(`${API_ENDPOINTS.ADMIN_ORDERS}/${statusOrderId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +84,7 @@ function AdminOrders () {
     setDeleteError(null)
     const token = localStorage.getItem('adminToken')
     try {
-      const res = await fetch(`/api/orders/${deleteId}`, {
+      const res = await fetch(`${API_ENDPOINTS.ADMIN_ORDERS}/${deleteId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
