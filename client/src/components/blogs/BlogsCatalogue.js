@@ -231,7 +231,7 @@ function BlogsCatalogue () {
         {/* Main Content */}
         <main className='flex flex-col md:flex-row max-w-7xl mx-auto px-4 gap-8 py-10 flex-1'>
           {/* Blog Cards Grid */}
-          <div className='grid grid-cols-2 gap-8 mb-8'>
+          <div className='grid grid-cols-2 gap-8 mb-8 self-start'>
             {loading && <div className='col-span-full text-center text-gray-500'>Loading blogs...</div>}
             {error && <div className='col-span-full text-center text-red-500'>{error}</div>}
             {!loading && !error && blogs.length === 0 && <div className='col-span-full text-center text-gray-500'>No blogs found.</div>}
