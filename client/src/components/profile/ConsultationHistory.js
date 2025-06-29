@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import useAuth from '../../store/auth'
+import API_ENDPOINTS from '../../config/api'
 
 function StatusBadge ({ isUpcoming }) {
   const baseClasses = 'px-2.5 py-0.5 text-xs font-medium rounded-full'
@@ -25,7 +26,7 @@ function ConsultationHistory () {
   useEffect(() => {
     const fetchConsultations = async () => {
       try {
-        const response = await fetch('/api/consultations', {
+        const response = await fetch(API_ENDPOINTS.CONSULTATIONS, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -95,7 +96,7 @@ function ConsultationHistory () {
       return
     }
     try {
-      const res = await fetch(`/api/consultations/${consultation._id}`, {
+      const res = await fetch(API_ENDPOINTS.CONSULTATION_DETAILS(consultation._id), {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       })
