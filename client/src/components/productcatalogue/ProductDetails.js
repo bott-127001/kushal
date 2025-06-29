@@ -265,14 +265,29 @@ function ProductDetails () {
                     value={user?.name || user?.email || ''}
                     disabled
                   />
-                  <select
-                    className='border border-gray-300 rounded px-3 py-2 w-32'
-                    value={reviewForm.rating}
-                    onChange={e => setReviewForm(f => ({ ...f, rating: Number(e.target.value) }))}
-                    required
-                  >
-                    {[5,4,3,2,1].map(r => <option key={r} value={r}>{r} Star{r > 1 ? 's' : ''}</option>)}
-                  </select>
+                  <div className='flex items-center gap-1'>
+                    {[1,2,3,4,5].map(star => (
+                      <button
+                        key={star}
+                        type='button'
+                        onClick={() => setReviewForm(f => ({ ...f, rating: star }))}
+                        className='focus:outline-none'
+                        aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
+                      >
+                        <svg
+                          width='28'
+                          height='28'
+                          fill={star <= reviewForm.rating ? '#FFD700' : 'none'}
+                          stroke='#FFD700'
+                          strokeWidth='1.5'
+                          viewBox='0 0 24 24'
+                        >
+                          <polygon points='12,2 15,9 22,9.5 17,14.5 18.5,22 12,18 5.5,22 7,14.5 2,9.5 9,9' />
+                        </svg>
+                      </button>
+                    ))}
+                    <span className='ml-2 text-sm text-gray-600'>{reviewForm.rating} Star{reviewForm.rating > 1 ? 's' : ''}</span>
+                  </div>
                 </div>
                 <textarea
                   className='border border-gray-300 rounded px-3 py-2 min-h-[60px]'
