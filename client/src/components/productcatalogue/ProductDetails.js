@@ -239,7 +239,7 @@ function ProductDetails () {
                         'Authorization': `Bearer ${token}`
                       },
                       body: JSON.stringify({
-                        user: user?.email || user?.name || 'Anonymous',
+                        user: user?.name || user?.email || 'Anonymous',
                         rating: reviewForm.rating,
                         comment: reviewForm.comment
                       })
@@ -262,7 +262,7 @@ function ProductDetails () {
                   <input
                     className='border border-gray-300 rounded px-3 py-2 flex-1 bg-gray-100 cursor-not-allowed'
                     placeholder='Your Name'
-                    value={user?.email || ''}
+                    value={user?.name || user?.email || ''}
                     disabled
                   />
                   <select
