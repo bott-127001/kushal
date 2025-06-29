@@ -14,6 +14,7 @@ function BlogsCatalogue () {
   const [topics, setTopics] = useState([])
   const [writers, setWriters] = useState([])
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false)
+  const [isMobileTagsOpen, setIsMobileTagsOpen] = useState(false)
 
   // Sidebar mock data
   const categories = ['All', 'Astrology', 'Gemstones', 'Zodiac Signs', 'Crystal Healing']
@@ -141,12 +142,51 @@ function BlogsCatalogue () {
         {/* Category Tabs & Sort */}
         <div className='w-full border-b border-[#003D37] bg-white'>
           <div className='max-w-5xl mx-auto flex items-center justify-between px-4 py-4'>
-            <div className='flex gap-2 md:gap-4'>
+            {/* Mobile: Tags dropdown button */}
+            <div className='md:hidden flex-1'>
+              <button
+                onClick={() => setIsMobileTagsOpen(v => !v)}
+                className='w-40 flex items-center justify-between px-4 py-2 bg-white rounded-lg shadow border border-[#003D37] text-left text-xs font-semibold'
+              >
+                <span>Tags</span>
+                <svg
+                  className={`w-4 h-4 text-gray-500 transition-transform ${isMobileTagsOpen ? 'rotate-180' : ''}`}
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+                </svg>
+              </button>
+              {isMobileTagsOpen && (
+                <div className='absolute left-0 z-20 mt-2 w-48 max-w-xs bg-white border border-[#003D37] rounded-lg shadow-lg p-2 flex flex-wrap gap-2'>
+                  <button
+                    key='All'
+                    className={`px-4 py-2 rounded font-semibold text-xs transition ${category === 'All' ? 'bg-[#003D37] text-white' : 'bg-white text-[#23233a] border border-[#003D37]'}`}
+                    onClick={() => { handleCategory('All'); setIsMobileTagsOpen(false) }}
+                  >
+                    All
+                  </button>
+                  {topics.map(cat => (
+                    <button
+                      key={cat}
+                      className={`px-4 py-2 rounded font-semibold text-xs transition ${category === cat ? 'bg-[#003D37] text-white' : 'bg-white text-[#23233a] border border-[#003D37]'}`}
+                      onClick={() => { handleCategory(cat); setIsMobileTagsOpen(false) }}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Desktop: Horizontal tag bar */}
+            <div className='hidden md:flex gap-2 md:gap-4 flex-1'>
               <button key='All' className={`px-5 py-2 rounded font-semibold text-sm transition ${category === 'All' ? 'bg-[#003D37] text-white' : 'bg-white text-[#23233a] border border-[#003D37]'}`} onClick={() => handleCategory('All')}>All</button>
               {topics.map(cat => (
                 <button key={cat} className={`px-5 py-2 rounded font-semibold text-sm transition ${category === cat ? 'bg-[#003D37] text-white' : 'bg-white text-[#23233a] border border-[#003D37]'}`} onClick={() => handleCategory(cat)}>{cat}</button>
               ))}
             </div>
+            {/* Sort dropdown (unchanged) */}
             <div className='flex items-center gap-2'>
               <svg width='18' height='18' fill='none' stroke='#23233a' strokeWidth='2' viewBox='0 0 24 24'><path d='M3 6h18M6 12h12M9 18h6'/></svg>
               <div className='relative inline-block text-left'>
@@ -190,7 +230,7 @@ function BlogsCatalogue () {
         {/* Main Content */}
         <main className='flex flex-col md:flex-row max-w-7xl mx-auto px-4 gap-8 py-10 flex-1'>
           {/* Blog Cards Grid */}
-          <div className='flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'>
+          <div className='flex-1 grid grid-cols-2 gap-8'>
             {loading && <div className='col-span-full text-center text-gray-500'>Loading blogs...</div>}
             {error && <div className='col-span-full text-center text-red-500'>{error}</div>}
             {!loading && !error && blogs.length === 0 && <div className='col-span-full text-center text-gray-500'>No blogs found.</div>}
@@ -203,17 +243,6 @@ function BlogsCatalogue () {
                   <h2 className='font-serif font-bold text-lg mb-2'>{card.title}</h2>
                   <div className='text-xs text-gray-500 mb-2'>{card.author} • {new Date(card.date).toLocaleDateString()} • {card.readTime}</div>
                   <p className='text-gray-700 text-sm mb-4'>{card.summary}</p>
-                </div>
-                <div className='flex items-center justify-between mt-auto'>
-                  {/* Placeholder for likes/bookmark icons */}
-                  <div className='flex items-center gap-2 text-[#003D37] text-sm'>
-                    <svg width='18' height='18' fill='none' stroke='currentColor' strokeWidth='2' viewBox='0 0 24 24'><path d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/></svg>
-                    {/* Placeholder: no likes count yet */}
-                  </div>
-                  <div className='flex items-center gap-3 text-gray-400'>
-                    <button><svg width='18' height='18' fill='none' stroke='currentColor' strokeWidth='2' viewBox='0 0 24 24'><path d='M17 1.01 7 1c-1.1 0-2 .89-2 1.99v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-18c0-1.1-.9-1.99-2-1.99zM7 4h10v2H7V4zm0 4h10v2H7V8zm0 4h10v2H7v-2zm0 4h10v2H7v-2z'/></svg></button>
-                    <button><svg width='18' height='18' fill='none' stroke='currentColor' strokeWidth='2' viewBox='0 0 24 24'><path d='M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z'/></svg></button>
-                  </div>
                 </div>
               </Link>
             ))}
