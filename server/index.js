@@ -303,11 +303,32 @@ const services = [
   { title: 'Crystal Healing Session', duration: '45 minutes', price: '$149', icon: '', description: 'Experience the restorative power of crystals chosen for your energy. Learn how to use them for balance, healing, and personal growth.' }
 ]
 
-const insights = [
-  { category: 'Gemstones', title: 'The Power of Birthstones', image: '', link: '#' },
-  { category: 'Astrology', title: 'Understanding Your Zodiac Sign', image: '', link: '#' },
-  { category: 'Wellness', title: 'Crystal Healing Guide', image: '', link: '#' }
-]
+// Blog model
+const blogSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  slug: { type: String, required: true, unique: true },
+  author: { type: String, required: true },
+  date: { type: Date, required: true },
+  readTime: { type: String, required: true },
+  summary: { type: String },
+  content: { type: String, required: true }, // For now, plain string. Can be blocks/rich text later.
+  tags: [String],
+  image: String,
+  images: [String], // Array of image URLs for blog content
+  relatedProducts: [String] // Array of product IDs or names
+})
+const Blog = mongoose.model('Blog', blogSchema)
+
+// Update /api/insights to return latest 3 blogs
+app.get('/api/insights', async (req, res) => {
+  try {
+    const insights = await Blog.find().sort({ date: -1 }).limit(3)
+    res.json(insights)
+  } catch (err) {
+    console.error('Error in /api/insights:', err)
+    res.status(500).json({ error: 'Failed to fetch insights' })
+  }
+})
 
 // GET /api/products with pagination and sorting
 app.get('/api/products', async (req, res) => {
@@ -441,7 +462,6 @@ app.post('/api/products/seed', async (req, res) => {
 
 app.get('/api/gemstones', (req, res) => res.json(gemstones))
 app.get('/api/services', (req, res) => res.json(services))
-app.get('/api/insights', (req, res) => res.json(insights))
 
 // POST /api/products (admin)
 app.post('/api/products', adminAuth, async (req, res) => {
@@ -732,22 +752,6 @@ app.post('/api/consultations', authenticateJWT, async (req, res) => {
     res.status(500).json({ error: 'Failed to book consultation' })
   }
 })
-
-// Blog model
-const blogSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
-  author: { type: String, required: true },
-  date: { type: Date, required: true },
-  readTime: { type: String, required: true },
-  summary: { type: String },
-  content: { type: String, required: true }, // For now, plain string. Can be blocks/rich text later.
-  tags: [String],
-  image: String,
-  images: [String], // Array of image URLs for blog content
-  relatedProducts: [String] // Array of product IDs or names
-})
-const Blog = mongoose.model('Blog', blogSchema)
 
 // GET /api/blogs (list, with pagination, search, filter, sort)
 app.get('/api/blogs', async (req, res) => {
