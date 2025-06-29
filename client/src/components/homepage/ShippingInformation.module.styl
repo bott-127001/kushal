@@ -1,0 +1,25 @@
+methodCard
+  @apply flex gap-4 p-4 rounded-lg border border-gray-100 bg-gray-50 shadow-sm items-start
+  transition-all duration-200 hover:shadow-md
+
+iconBox
+  @apply flex items-center justify-center w-10 h-10 rounded-full
+
+infoCard
+  @apply flex items-center p-4 rounded-lg border border-gray-100 bg-gray-50 text-gray-800 text-sm font-medium
+
+faqBox
+  @apply bg-gray-50 rounded-lg border border-gray-100 divide-y divide-gray-100 shadow-sm
+
+faqItem
+  @apply p-4 cursor-pointer
+  summary
+    @apply font-semibold text-gray-800 outline-none
+  &[open] summary
+    @apply text-emerald-700
+
+faqContent
+  @apply mt-2 text-gray-600 text-sm
+
+helpBox
+  @apply bg-emerald-700 text-white 
