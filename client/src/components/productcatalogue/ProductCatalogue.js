@@ -6,6 +6,7 @@ import ProductGrid from './ProductGrid'
 import useCart from '../../store/cart'
 import AuthPromptModal from '../homepage/AuthPromptModal'
 import useAuth from '../../store/auth'
+import API_ENDPOINTS from '../../config/api'
 
 const PAGE_SIZE = 8
 const SORT_OPTIONS = [
@@ -66,7 +67,7 @@ function ProductCatalogue () {
       sortBy = 'title'
       order = 'desc'
     }
-    fetch(`/api/products?page=${page}&limit=${PAGE_SIZE}&sortBy=${sortBy}&order=${order}`)
+    fetch(`${API_ENDPOINTS.PRODUCTS}?page=${page}&limit=${PAGE_SIZE}&sortBy=${sortBy}&order=${order}`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch products')
         return res.json()
