@@ -1,5 +1,4 @@
 import path from 'path'
-import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 import express from 'express'
@@ -9,14 +8,6 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import nodemailer from 'nodemailer'
 import { fileURLToPath } from 'url'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-import express from 'express'
-import cors from 'cors'
-import mongoose from 'mongoose'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import nodemailer from 'nodemailer'
 import Stripe from 'stripe'
 import fetch from 'node-fetch'
 import multer from 'multer'
